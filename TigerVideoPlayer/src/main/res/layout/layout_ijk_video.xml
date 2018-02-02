@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="true"
+    android:background="@android:color/black">
+    <!-- 视频画面显示媒介TextureView的父容器 -->
+    <RelativeLayout
+        android:id="@+id/surface_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+    </RelativeLayout>
+    <!-- 视频预览图 -->
+    <ImageView
+        android:id="@+id/vp_video_thumb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:scaleType="fitCenter"/>
+
+    <include
+        android:id="@+id/media_ctrl"
+        layout="@layout/media_ctrl_view"/>
+
+</RelativeLayout>

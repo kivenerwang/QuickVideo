@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/layout_top"
+        layout="@layout/ctrl_top_view" />
+
+    <!--loading layout-->
+    <include
+        android:id="@+id/loading"
+        layout="@layout/video_loading_view" />
+
+    <!--video_pop window-->
+    <include
+        android:id="@+id/video_prop_window"
+        layout="@layout/video_pop_view" />
+
+    <!--bottom layout-->
+    <include
+        android:id="@+id/layout_bottom"
+        layout="@layout/ctrl_bottom_view"
+        android:visibility="visible" />
+
+    <!-- bottom progressbar bar-->
+    <ProgressBar
+        android:id="@+id/bottom_progressbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_2"
+        android:layout_gravity="bottom"
+        android:max="100"
+        android:progressDrawable="@drawable/video_progress" />
+
+    <ImageView
+        android:id="@+id/btn_start"
+        android:layout_width="@dimen/startbtn_width"
+        android:layout_height="@dimen/startbtn_height"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:background="@drawable/player2345_playbtn_bg"
+
+        android:visibility="visible" />
+
+
+    <ImageView
+        android:id="@+id/small_close"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:paddingLeft="@dimen/dimen_10"
+        android:paddingTop="@dimen/dimen_10"
+        android:scaleType="centerInside"
+        android:src="@drawable/video_small_close"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/lock_screen"
+        android:layout_width="@dimen/lockbtn_width"
+        android:layout_height="@dimen/lockbtn_height"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/lockbtn_margin_left"
+        android:scaleType="centerInside"
+        android:src="@drawable/news_video_lock_off"
+        android:background="@drawable/player2345_lockbtn_bg"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/net_error"
+        layout="@layout/net_error" />
+
+    <include
+        android:id="@+id/video_replay_view"
+        layout="@layout/ctrl_replay_view"/>
+
+    <ImageView
+        android:id="@+id/video_cover_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>

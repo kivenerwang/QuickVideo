@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <cn.ittiger.player.IjkVideoView
+        android:id="@+id/video_player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <!--<TextView
+        android:id="@+id/tv_video_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:singleLine="true"
+        android:paddingLeft="@dimen/d_10"
+        android:paddingRight="@dimen/d_10"
+        android:paddingBottom="@dimen/d_5"
+        android:paddingTop="@dimen/d_5"
+        android:layout_marginBottom="@dimen/d_5"
+        android:layout_marginRight="@dimen/d_5"
+        android:background="@drawable/video_duration_bg"
+        android:textSize="@dimen/sp12"
+        android:textColor="@color/common_white_color_alpha_100"/>-->
+
+</RelativeLayout>

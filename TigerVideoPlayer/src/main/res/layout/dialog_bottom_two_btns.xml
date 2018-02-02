@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/dialog_bottom_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_1px"
+        android:background="@color/B050"/>
+
+    <TextView
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_52dp"
+        android:background="@drawable/dialog_btn_left"
+        android:gravity="center"
+        android:text="@string/tips_not_wifi_cancel"
+        android:textColor="@color/C020"
+        android:textSize="@dimen/F03"
+        android:layout_toLeftOf="@+id/dialog_bottom_btn_divider"
+        android:layout_below="@id/dialog_bottom_divider"/>
+
+    <View
+        android:id="@+id/dialog_bottom_btn_divider"
+        android:layout_width="@dimen/dimen_1px"
+        android:layout_height="@dimen/dimen_52dp"
+        android:background="@color/B050"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/dialog_bottom_divider"/>
+
+    <TextView
+        android:id="@+id/confirm"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_52dp"
+        android:background="@drawable/dialog_btn_right"
+        android:gravity="center"
+        android:text="@string/tips_not_wifi_cancel"
+        android:textColor="@color/A01"
+        android:textSize="@dimen/F03"
+        android:layout_toRightOf="@id/dialog_bottom_btn_divider"
+        android:layout_below="@id/dialog_bottom_divider"/>
+</RelativeLayout>

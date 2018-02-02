@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:layout_gravity="center"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/video_btn_replay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/news_video_repeat"/>
+
+    <TextView
+        android:id="@+id/video_tv_replay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/video_btn_replay"
+        android:paddingLeft="@dimen/dimen_6"
+        android:text="@string/tv_replay"
+        android:textSize="15sp"
+        android:textColor="@color/common_color"
+
+        />
+
+
+</RelativeLayout>

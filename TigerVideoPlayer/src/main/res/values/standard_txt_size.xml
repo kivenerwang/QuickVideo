@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="F01">18sp</dimen>
+    <dimen name="F02">17sp</dimen>
+    <dimen name="F03">16sp</dimen>
+    <dimen name="F04">15sp</dimen>
+    <dimen name="F05">14sp</dimen>
+    <dimen name="F06">13sp</dimen>
+    <dimen name="F07">12sp</dimen>
+    <dimen name="F08">11sp</dimen>
+    <dimen name="F09">10sp</dimen>
+    <dimen name="F010">9sp</dimen>
+    <dimen name="F011">8sp</dimen>
+    <dimen name="F013">20sp</dimen>
+
+</resources>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/video_title_bg">
+
+    <ImageView
+        android:id="@+id/icon_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="@dimen/dimen_20"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:src="@drawable/player2345_backbtn_bg" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_13"
+        android:layout_marginLeft="@dimen/dimen_9"
+        android:layout_marginRight="@dimen/dimen_14"
+        android:layout_marginTop="@dimen/dimen_13"
+        android:layout_toLeftOf="@+id/system_status_view"
+        android:layout_toRightOf="@+id/icon_back"
+        android:ellipsize="end"
+        android:text=""
+        android:textColor="@color/video_title_text"
+        android:textSize="@dimen/dimen_16sp"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/system_status_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/dimen_13"
+        android:layout_marginTop="@dimen/dimen_13"
+        android:visibility="gone">
+
+        <cn.ittiger.player.view.NetStatusView
+            android:id="@+id/data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dimen_20"
+            android:layout_toLeftOf="@+id/battery"
+            android:src="@drawable/news_video_wifi_3"
+            android:visibility="visible" />
+
+        <cn.ittiger.player.view.BatteryView
+            android:id="@+id/battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dimen_15"
+            android:layout_toLeftOf="@+id/time"
+            android:src="@drawable/player2345_battery"
+            android:visibility="visible" />
+
+        <cn.ittiger.player.view.DigitalClock
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dimen_15"
+            android:layout_marginRight="@dimen/dimen_20"
+            android:text="11:24"
+            android:textColor="@color/player2345_clocktime"
+            android:textSize="13sp"
+            android:visibility="visible" />
+    </LinearLayout>
+
+
+</RelativeLayout>

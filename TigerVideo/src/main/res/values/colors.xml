@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF04B9F1</color>
+    <color name="colorPrimaryDark">#FF04B9F1</color>
+    <color name="colorAccent">#FF04B9F1</color>
+
+    <!-- 100% white -->
+    <color name="common_white_color_alpha_100">#FFFFFFFF</color>
+    <!-- 70% black -->
+    <color name="common_black_color_alpha_70">#B2000000</color>
+    <!-- 54% black -->
+    <color name="common_black_coror_alpha_54">#8a000000</color>
+
+    <color name="about_bg_color">#EEEEEE</color>
+    <color name="about_txt_color">#2C2C2C</color>
+
+</resources>

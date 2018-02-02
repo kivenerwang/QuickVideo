@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_video_brightness_box"
+    android:layout_width="@dimen/video_pop_width"
+    android:layout_height="@dimen/video_pop_height"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:layout_gravity="center"
+    android:visibility="gone"
+    android:gravity="center_horizontal"
+    android:background="@drawable/video_dialog_progress_bg"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/video_pop_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/video_pop_icon_margintop"
+        android:layout_centerHorizontal="true" />
+
+    <FrameLayout
+        android:id="@+id/video_pop_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/video_pop_icon"
+        android:layout_centerHorizontal="true">
+
+        <LinearLayout
+            android:id="@+id/video_time_ctrl_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dimen_2"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:text="@string/video_current_time"
+                android:textSize="15.0sp" />
+
+            <TextView
+                android:id="@+id/tv_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#999999"
+                android:text="@string/video_total_time"
+                android:textSize="15.0sp" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/video_pop_progress"
+            android:layout_width="@dimen/progressbar_width"
+            android:layout_height="@dimen/progressbar_height"
+            android:layout_marginTop="@dimen/video_progressbar_pading_top"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:progressDrawable="@drawable/video_pop_progress_bg"
+            android:progress="0"
+            android:max="100"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</RelativeLayout>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dimen_60"
+    android:layout_gravity="bottom"
+    android:background="@drawable/video_bottom_bg">
+
+    <RelativeLayout
+        android:id="@+id/bottom_play_control"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_20"
+        android:layout_marginTop="@dimen/dimen_30"
+        android:layout_toLeftOf="@+id/icon_fullscreen">
+        <TextView
+            android:id="@+id/bottom_tv_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_15"
+            android:textSize="@dimen/dimen_11sp"
+            android:text="@string/video_current_time"
+            android:textColor="#ffffff"/>
+
+        <SeekBar
+            android:id="@+id/bottom_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/bottom_tv_current"
+            android:layout_toLeftOf="@+id/bottom_tv_total"
+            android:layout_marginRight="@dimen/dimen_10"
+            android:progressDrawable="@drawable/video_seek_progress"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:minHeight="@dimen/dimen_2"
+            android:maxHeight="@dimen/dimen_2"
+            android:thumb="@drawable/video_seek_thumb"
+            android:thumbOffset="0dp"
+            android:max="100"
+            android:progress="0"/>
+
+        <TextView
+            android:id="@+id/bottom_tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/video_current_time"
+            android:textSize="@dimen/dimen_11sp"
+            android:layout_alignParentRight="true"
+            android:textColor="#ffffff"/>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/icon_fullscreen"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dimen_40"
+        android:paddingLeft="@dimen/dimen_15"
+        android:paddingRight="@dimen/dimen_15"
+        android:scaleType="center"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/news_video_full_off"/>
+</RelativeLayout>
