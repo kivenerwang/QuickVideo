@@ -71,8 +71,6 @@ public class BatteryView extends ImageView {
 //        Rect destRect = new Rect(0,0,mBitmap.getWidth()/20,mBitmap.getHeight());
 //        canvas.drawBitmap(mBitmap,srcRect,destRect,mPaint);
 //        //canvas.drawBitmap(mBitmap,mSecondX,0,mPaint);
-//        Log2345.printfLog("[onDraw]mCurrentX = "+ mCurrentX);
-//        Log2345.printfLog("[onDraw]mSecondX = "+ mSecondX);
 //    }
 
 //    private void initView() {
