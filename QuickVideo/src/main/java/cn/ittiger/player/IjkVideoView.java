@@ -62,7 +62,7 @@ public class IjkVideoView extends FrameLayout implements
         Observer{
 
     @BindView(R2.id.surface_container)
-    ViewGroup mTextureViewContainer; //渲染控件父类
+    protected ViewGroup mTextureViewContainer; //渲染控件父类
 
     protected View mSmallClose; //小窗口关闭按键
 
@@ -246,6 +246,11 @@ public class IjkVideoView extends FrameLayout implements
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         PlayerManager.getInstance().removeObserver(this);
+        if(mCurrentState != PlayState.STATE_NORMAL) {
+            PlayerManager.getInstance().stop();
+            onPlayStateChanged(PlayState.STATE_NORMAL);
+        }
+
     }
 
     private void initView(Context context) {
@@ -303,12 +308,25 @@ public class IjkVideoView extends FrameLayout implements
 
     }
 
+    @OnClick(R2.id.surface_container)
+    void onClickContainer() {
+        Utils.showViewIfNeed(mStartButton);
+        Utils.showViewIfNeed(mBottomContainer);
+        Utils.showViewIfNeed(mTopContainer);
+        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, 3000);
+    }
+
+
     @OnClick(R2.id.btn_start)
     void onClickStartBtn() {
         if (TextUtils.isEmpty(mVideoUrl)) {
             Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT)
                     .show();
             return;
+        }
+        if(!PlayerManager.getInstance().isViewPlaying(mViewHash)) {
+            //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
+            PlayerManager.getInstance().stop();
         }
         switch (mCurrentState) {
             case PlayState.STATE_NORMAL:
@@ -465,7 +483,8 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUICompeted() {
-
+    //显示视频预览图
+        Utils.showViewIfNeed(mVideoThumbView);
     }
 
     @Override
@@ -491,6 +510,10 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUINormal() {
+
+        //显示视频预览图
+        Utils.showViewIfNeed(mVideoThumbView);
+
         //顶部布局隐藏
         mTopContainer.setVisibility(INVISIBLE);
         //底部布局隐藏
@@ -534,6 +557,7 @@ public class IjkVideoView extends FrameLayout implements
 
         Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mLoadingProgressBar);
+        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, 3000);
     }
 
     @Override

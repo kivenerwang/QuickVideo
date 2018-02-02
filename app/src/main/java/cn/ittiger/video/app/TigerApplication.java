@@ -6,7 +6,6 @@ import butterknife.ButterKnife;
 import cn.ittiger.database.SQLiteDBConfig;
 import cn.ittiger.player.Config;
 import cn.ittiger.player.PlayerManager;
-import cn.ittiger.player.factory.ExoPlayerFactory;
 import cn.ittiger.player.factory.IjkPlayerFactory;
 import cn.ittiger.video.R;
 import cn.ittiger.video.util.ApplicationHelper;

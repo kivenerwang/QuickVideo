@@ -136,7 +136,9 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
 
     @Override
     public void onCompletion(IMediaPlayer mp) {
-
+        if(mPlayCallback != null) {
+            mPlayCallback.onComplete();
+        }
     }
 
     @Override
