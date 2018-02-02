@@ -247,12 +247,11 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        PlayerManager.getInstance().removeObserver(this);
         if(mCurrentState != PlayState.STATE_NORMAL) {
             PlayerManager.getInstance().stop();
             onPlayStateChanged(PlayState.STATE_NORMAL);
         }
-
+        PlayerManager.getInstance().removeObserver(this);
     }
 
     private void initView(Context context) {
@@ -314,6 +313,10 @@ public class IjkVideoView extends FrameLayout implements
 
     @OnClick(R2.id.surface_container)
     void onClickContainer() {
+        if(!PlayerManager.getInstance().isViewPlaying(mViewHash)) {
+            //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
+            PlayerManager.getInstance().stop();
+        }
         mPresenter.handleVideoContainerLogic(mCurrentState, mBottomContainer.getVisibility() ==VISIBLE);
     }
 
