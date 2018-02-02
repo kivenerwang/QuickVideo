@@ -15,6 +15,8 @@ public class ProgressHandler  extends Handler{
     public static final int UPDATE_BOTTOM_PROGRESS = 3;
     public static final int UPDATE_CONTROLLER_VIEW = 4;
 
+    public static final int AUDO_HIDE_WIDGET_TIME = 3000;// auto hide all widget
+
 
     private WeakReference<IjkVideoView> reference;
     public ProgressHandler(IjkVideoView view) {

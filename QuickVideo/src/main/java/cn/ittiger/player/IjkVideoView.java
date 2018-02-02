@@ -203,6 +203,8 @@ public class IjkVideoView extends FrameLayout implements
      */
     private int mCurrentScreenState = ScreenState.SCREEN_STATE_NORMAL;
 
+    private VideoPresenter mPresenter;
+
     /**
      * 正常状态下的标题是否显示
      */
@@ -260,6 +262,7 @@ public class IjkVideoView extends FrameLayout implements
         //避免ListView中item点击无法响应的问题
         setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
         setBackgroundColor(Color.BLACK);
+        mPresenter = new VideoPresenter(this);
     }
 
     private void initData(Context context) {
@@ -269,6 +272,7 @@ public class IjkVideoView extends FrameLayout implements
         mSmallWindowWidth = mScreenWidth / 2;
         mSmallWindowHeight = (int) (mSmallWindowWidth * 1.0f / 16 * 9 + 0.5f);
         mHandler = new ProgressHandler(this);
+        mBottomSeekBar.setOnSeekBarChangeListener(this);
     }
 
     /**
@@ -310,10 +314,7 @@ public class IjkVideoView extends FrameLayout implements
 
     @OnClick(R2.id.surface_container)
     void onClickContainer() {
-        Utils.showViewIfNeed(mStartButton);
-        Utils.showViewIfNeed(mBottomContainer);
-        Utils.showViewIfNeed(mTopContainer);
-        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, 3000);
+        mPresenter.handleVideoContainerLogic(mCurrentState, mBottomContainer.getVisibility() ==VISIBLE);
     }
 
 
@@ -494,13 +495,9 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUILoading() {
-        mTopContainer.setVisibility(View.INVISIBLE);
-        mBottomContainer.setVisibility(View.INVISIBLE);
-        mStartButton.setVisibility(View.INVISIBLE);
-        mLockBtn.setVisibility(GONE);
-        mReplayView.setVisibility(GONE);
-        mNetView.setVisibility(GONE);
-        mLoadingProgressBar.setVisibility(View.VISIBLE);
+
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.showViewIfNeed(mLoadingProgressBar);
     }
 
     @Override
@@ -514,8 +511,10 @@ public class IjkVideoView extends FrameLayout implements
         //显示视频预览图
         Utils.showViewIfNeed(mVideoThumbView);
 
-        //顶部布局隐藏
-        mTopContainer.setVisibility(INVISIBLE);
+        //显示视频标题
+        Utils.showViewIfNeed(mTitleTextView);
+        //隐藏视频返回键
+        Utils.hideViewIfNeed(mBackButton);
         //底部布局隐藏
         mBottomContainer.setVisibility(View.INVISIBLE);
         //loading 布局隐藏
@@ -536,7 +535,7 @@ public class IjkVideoView extends FrameLayout implements
         //顶部返回键显示
         mBackButton.setVisibility(View.VISIBLE);
         //顶部title显示
-        mTitleTextView.setVisibility(VISIBLE);
+        Utils.showViewIfNeed(mTitleTextView);
         //loading 布局隐藏
         mLoadingProgressBar.setVisibility(View.INVISIBLE);
         //开始按钮显示
@@ -557,37 +556,35 @@ public class IjkVideoView extends FrameLayout implements
 
         Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mLoadingProgressBar);
-        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, 3000);
+        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
     }
 
     @Override
     public void changeUIBuffer() {
-        //顶部布局显示
-        mTopContainer.setVisibility(View.VISIBLE);
-        //锁屏男
-        mLockBtn.setVisibility(INVISIBLE);
-        mBottomContainer.setVisibility(View.VISIBLE);
-        mStartButton.setVisibility(View.INVISIBLE);
-        mLoadingProgressBar.setVisibility(View.VISIBLE);
-        mBottomProgressBar.setVisibility(View.INVISIBLE);
+        Utils.showViewIfNeed(mLoadingProgressBar);
+        Utils.hideViewIfNeed(mStartButton);
     }
 
     @Override
     public void hidenAllView() {
-
-        //顶部布局隐藏
-        mTopContainer.setVisibility(View.GONE);
-        //重播按钮隐藏
-        mReplayView.setVisibility(GONE);
-        //播放按钮隐藏
-        mStartButton.setVisibility(View.GONE);
-        //锁屏按钮隐藏
-        mLockBtn.setVisibility(GONE);
-        //底部布局隐藏
-        mBottomContainer.setVisibility(View.GONE);
+        Utils.hideViewIfNeed(mTitleTextView);
+        Utils.hideViewIfNeed(mBackButton);
+        Utils.hideViewIfNeed(mWifiView);
+        Utils.hideViewIfNeed(mBatteryView);
+        Utils.hideViewIfNeed(mTimeView);
+        Utils.hideViewIfNeed(mReplayView);
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mBottomContainer);
     }
 
-
+    @Override
+    public void showAllView() {
+        Utils.showViewIfNeed(mTitleTextView);
+        Utils.showViewIfNeed(mStartButton);
+        Utils.showViewIfNeed(mBottomContainer);
+        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
+        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+    }
 
     /************************ 定时处理的工具 ********************************/
 

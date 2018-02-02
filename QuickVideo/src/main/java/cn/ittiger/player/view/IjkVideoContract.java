@@ -32,12 +32,22 @@ public interface IjkVideoContract {
         //隐藏所有控件
         void hidenAllView();
 
+        //显示所有控件
+        void showAllView();
+
         void changeUICompeted();
 
         void changeUIError();
 
         void changeUINetError();
 
+        void startPlayVideo();
+
+    }
+
+    interface IVideoPresenter {
+        //处理视频container点击逻辑
+        void handleVideoContainerLogic(int playState, boolean needHiden);
     }
 
 

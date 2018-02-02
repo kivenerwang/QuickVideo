@@ -27,11 +27,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar','*.so'])
-    compile 'com.google.android.exoplayer:exoplayer-core:r2.4.0'
-    compile 'com.google.android.exoplayer:exoplayer-dash:r2.4.0'
-    compile 'com.google.android.exoplayer:exoplayer-hls:r2.4.0'
-    compile 'com.google.android.exoplayer:exoplayer-smoothstreaming:r2.4.0'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.danikula:videocache:2.7.0'
 
 
