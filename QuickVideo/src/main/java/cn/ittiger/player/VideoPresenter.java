@@ -1,5 +1,9 @@
 package cn.ittiger.player;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+
 import cn.ittiger.player.state.PlayState;
 import cn.ittiger.player.view.IjkVideoContract;
 
@@ -31,6 +35,18 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 handleViewState(needHiden);
                 break;
         }
+    }
+
+    @Override
+    public void handleScreenRotate(Activity activity) {
+        if (activity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            //当前小屏，需要且成全屏
+            mVideoView.changeUIFullScreen();
+        } else {
+            //当前屏幕是全屏，需要切出正常屏幕
+            mVideoView.changeUINormalScreen();
+        }
+
     }
 
     /**

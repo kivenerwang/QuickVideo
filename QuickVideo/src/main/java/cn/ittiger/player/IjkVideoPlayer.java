@@ -1,11 +1,14 @@
 package cn.ittiger.player;
 
+import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
+import android.view.TextureView;
+
 import java.lang.ref.WeakReference;
 
 import cn.ittiger.player.state.PlayState;
@@ -163,6 +166,25 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
         return false;
     }
 
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        try {
+            mMediaPlayer.setSurface(new Surface(surface));
+        } catch (Exception e) {
+
+        }
+        super.onSurfaceTextureAvailable(surface, width, height);
+    }
+
+
+    @Override
+    public void setTextureView(TextureView textureView) {
+
+        if(textureView == null && mSurfaceTexture != null) {
+            mSurfaceTexture.release();
+        }
+        super.setTextureView(textureView);
+    }
 
     static class MediaHandler extends Handler {
         private WeakReference<IjkVideoPlayer> reference;

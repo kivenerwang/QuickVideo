@@ -2,6 +2,7 @@ package cn.ittiger.player;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -100,7 +102,7 @@ public class IjkVideoView extends FrameLayout implements
     @BindView(R2.id.bottom_progressbar)
     protected ProgressBar mBottomProgressBar;
 
-    @BindView(R2.id.icon_fullscreen)
+    @BindView(R2.id.btn_screen_rotate)
     protected ImageView mFullscreenButton;
 
     @BindView(R2.id.bottom_tv_current)
@@ -211,6 +213,30 @@ public class IjkVideoView extends FrameLayout implements
     private boolean mShowNormalStateTitleView = true;
     private Handler mHandler;
 
+
+
+    /************************ 全屏播放相关操作 ********************************/
+    /**
+     * 切换全屏播放状态
+     */
+    private boolean mToggleFullScreen = false;
+    /**
+     * 切换全屏播放前当前VideoPlayerView的父容器
+     */
+    private ViewGroup mOldParent;
+    /**
+     * 切换全屏播放前当前VideoPlayerView的在父容器中的索引
+     */
+    private int mOldIndex = 0;
+    /**
+     * 切换到全屏播放前当前VideoPlayerView的宽度
+     */
+    private int mVideoWidth;
+    /**
+     * 切换到全屏播放前当前VideoPlayerView的高度
+     */
+    private int mVideoHeight;
+
     public IjkVideoView(@NonNull Context context) {
         super(context);
         initView(context);
@@ -241,17 +267,22 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mToggleFullScreen = false;
         PlayerManager.getInstance().addObserver(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        PlayerManager.getInstance().removeObserver(this);
+        if (mToggleFullScreen) {
+            return;
+        }
         if(mCurrentState != PlayState.STATE_NORMAL) {
             PlayerManager.getInstance().stop();
             onPlayStateChanged(PlayState.STATE_NORMAL);
         }
-        PlayerManager.getInstance().removeObserver(this);
+
     }
 
     private void initView(Context context) {
@@ -312,7 +343,7 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @OnClick(R2.id.surface_container)
-    void onClickContainer() {
+    void clickContainer() {
         if(!PlayerManager.getInstance().isViewPlaying(mViewHash)) {
             //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
             PlayerManager.getInstance().stop();
@@ -322,7 +353,7 @@ public class IjkVideoView extends FrameLayout implements
 
 
     @OnClick(R2.id.btn_start)
-    void onClickStartBtn() {
+    void clickStartBtn() {
         if (TextUtils.isEmpty(mVideoUrl)) {
             Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT)
                     .show();
@@ -349,6 +380,13 @@ public class IjkVideoView extends FrameLayout implements
                 break;
         }
     }
+
+
+    @OnClick(R2.id.btn_screen_rotate)
+    void clickRotateBtn() {
+        mPresenter.handleScreenRotate((Activity) getContext());
+    }
+
 
 
     @Override
@@ -480,7 +518,6 @@ public class IjkVideoView extends FrameLayout implements
         mBackButton.setVisibility(View.VISIBLE);
         //设置锁屏按钮
         mLockBtn.setVisibility(VISIBLE);
-
         //设置右上角wifi，电量，等view
         mTopStatusView.setVisibility(VISIBLE);
     }
@@ -587,6 +624,62 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mBottomContainer);
         mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
         mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+    }
+
+    @Override
+    public void changeUIFullScreen() {
+        mToggleFullScreen = true;
+        PlayerManager.getInstance().setScreenState(mCurrentScreenState = ScreenState.SCREEN_STATE_FULLSCREEN);
+        PlayerManager.getInstance().pause();
+
+        ViewGroup windowContent = (ViewGroup) (Utils.getActivity(getContext())).findViewById(Window.ID_ANDROID_CONTENT);
+        mVideoWidth = this.getWidth();
+        mVideoHeight = this.getHeight();
+        mOldParent = (ViewGroup)this.getParent();
+        mOldIndex = mOldParent.indexOfChild(this);
+        mOldParent.removeView(this);
+
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        windowContent.addView(this, lp);
+
+        Utils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
+        Utils.getActivity(getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        PlayerManager.getInstance().play();
+
+//        //设置返回按钮
+//        mBackButton.setVisibility(View.VISIBLE);
+//        //设置锁屏按钮
+//        mLockBtn.setVisibility(VISIBLE);
+//        //设置右上角wifi，电量，等view
+//        mTopStatusView.setVisibility(VISIBLE);
+        mFullscreenButton.setImageResource(R.drawable.news_video_full_off);
+    }
+
+    @Override
+    public void changeUINormalScreen() {
+        if(!ScreenState.isFullScreen(mCurrentScreenState)) {
+            return;
+        }
+        mToggleFullScreen = true;
+        PlayerManager.getInstance().setScreenState(mCurrentScreenState = ScreenState.SCREEN_STATE_NORMAL);
+        PlayerManager.getInstance().pause();
+
+        ViewGroup windowContent = (ViewGroup) (Utils.getActivity(getContext())).findViewById(Window.ID_ANDROID_CONTENT);
+        windowContent.removeView(this);
+
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(mVideoWidth, mVideoHeight);
+        mOldParent.addView(this, mOldIndex, lp);
+
+        Utils.getActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
+        Utils.getActivity(getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        mFullscreenButton.setImageResource(R.drawable.news_video_full_on);
+        mOldParent = null;
+        mOldIndex = 0;
+        if(mCurrentState != PlayState.STATE_AUTO_COMPLETE) {
+            PlayerManager.getInstance().play();
+        }
     }
 
     /************************ 定时处理的工具 ********************************/
