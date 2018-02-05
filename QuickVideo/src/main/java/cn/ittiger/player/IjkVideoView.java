@@ -526,6 +526,8 @@ public class IjkVideoView extends FrameLayout implements
     public void changeUICompeted() {
     //显示视频预览图
         Utils.showViewIfNeed(mVideoThumbView);
+        Utils.showViewIfNeed(mStartButton);
+        mStartButton.setImageResource(R.drawable.news_video_start);
     }
 
     @Override
