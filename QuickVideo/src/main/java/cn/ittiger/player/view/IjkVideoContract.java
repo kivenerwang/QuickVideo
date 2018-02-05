@@ -1,7 +1,6 @@
 package cn.ittiger.player.view;
 
 import android.app.Activity;
-import android.content.Context;
 
 /**
  * Ijk 视频协议类，定义一些逻辑和UI的操作
@@ -49,6 +48,8 @@ public interface IjkVideoContract {
         void changeUIFullScreen();
 
         void changeUINormalScreen();
+
+        void changeUIErrorToast();
     }
 
     interface IVideoPresenter {
@@ -56,6 +57,8 @@ public interface IjkVideoContract {
         void handleVideoContainerLogic(int playState, boolean needHiden);
         //处理屏幕选择
         void handleScreenRotate(Activity activity);
+
+        void handleStartLogic(int mViewHash, String mVideoUrl, int state);
     }
 
 

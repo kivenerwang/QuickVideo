@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,6 +42,7 @@ import cn.ittiger.player.PlayerManager;
 import cn.ittiger.player.ProgressHandler;
 import cn.ittiger.player.R;
 import cn.ittiger.player.R2;
+import cn.ittiger.player.message.DurationMessage;
 import cn.ittiger.player.message.Message;
 import cn.ittiger.player.message.UIStateMessage;
 import cn.ittiger.player.state.PlayState;
@@ -354,31 +356,7 @@ public class IjkVideoView extends FrameLayout implements
 
     @OnClick(R2.id.btn_start)
     void clickStartBtn() {
-        if (TextUtils.isEmpty(mVideoUrl)) {
-            Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-        if(!PlayerManager.getInstance().isViewPlaying(mViewHash)) {
-            //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
-            PlayerManager.getInstance().stop();
-        }
-        switch (mCurrentState) {
-            case PlayState.STATE_NORMAL:
-            case PlayState.STATE_ERROR:
-                startPlayVideo();
-                break;
-            case PlayState.STATE_PLAYING:
-                PlayerManager.getInstance().pause();
-                break;
-            case PlayState.STATE_PAUSE:
-                PlayerManager.getInstance().play();
-                break;
-            case PlayState.STATE_AUTO_COMPLETE:
-                PlayerManager.getInstance().seekTo(0);
-                PlayerManager.getInstance().play();
-                break;
-        }
+        mPresenter.handleStartLogic(mViewHash, mVideoUrl, mCurrentState);
     }
 
 
@@ -428,6 +406,17 @@ public class IjkVideoView extends FrameLayout implements
             return;
         }
 
+        if(arg instanceof DurationMessage) {
+            ((Activity)getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    onDurationChanged(((DurationMessage) arg).getDuration());
+                }
+            });
+            return;
+        }
+
         if(!(arg instanceof UIStateMessage)) {
             return;
         }
@@ -440,6 +429,17 @@ public class IjkVideoView extends FrameLayout implements
         });
 
 
+    }
+
+    /**
+     * 更新视频的时长并自动更新视频进度条
+     * @param duration
+     */
+    private void onDurationChanged(int duration) {
+        mDuration = duration;
+        String totalTime = Utils.stringForTime(duration);
+        mTotalTimeTextView.setText(totalTime);
+        mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
     }
 
     private void onPlayStateChanged(int state) {
@@ -587,6 +587,7 @@ public class IjkVideoView extends FrameLayout implements
         mBottomContainer.setVisibility(View.VISIBLE);
         //底部progressbar 隐藏
         mBottomProgressBar.setVisibility(View.INVISIBLE);
+        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
     }
 
     @Override
@@ -598,7 +599,9 @@ public class IjkVideoView extends FrameLayout implements
 
         Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mLoadingProgressBar);
+
         mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+        mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
     }
 
     @Override
@@ -684,6 +687,13 @@ public class IjkVideoView extends FrameLayout implements
         }
     }
 
+    @Override
+    public void changeUIErrorToast() {
+        Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT)
+                .show();
+    }
+
+
     /************************ 定时处理的工具 ********************************/
 
     /**
@@ -714,9 +724,9 @@ public class IjkVideoView extends FrameLayout implements
     /**
      * 更新底部控制布局中的seekbar
      */
-    public void updateBottomProgress(android.os.Message msg) {
-        int position = msg.arg1;
-        int totalTime = msg.arg2;
+    public void updateBottomProgress() {
+        int position = PlayerManager.getInstance().getCurrentPosition();
+        int totalTime = mDuration;
         int progress = position * 100 / (totalTime == 0 ? 1 : totalTime);
 
         if (progress != 0) {
