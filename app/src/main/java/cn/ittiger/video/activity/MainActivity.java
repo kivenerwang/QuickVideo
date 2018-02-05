@@ -75,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             win.setAttributes(winParams);
         }
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-        tintManager.setStatusBarTintColor(getResources().getColor(R.color.colorPrimary));
-        tintManager.setStatusBarTintEnabled(true);
-        tintManager.setNavigationBarTintEnabled(false);
+//        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+//        tintManager.setStatusBarTintColor(getResources().getColor(R.color.colorPrimary));
+//        tintManager.setStatusBarTintEnabled(true);
+//        tintManager.setNavigationBarTintEnabled(false);
     }
 
     private void init() {
