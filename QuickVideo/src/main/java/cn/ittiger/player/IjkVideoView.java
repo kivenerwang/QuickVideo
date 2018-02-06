@@ -132,7 +132,7 @@ public class IjkVideoView extends FrameLayout implements
     @BindView(R2.id.time)
     protected DigitalClock mTimeView;
 
-    @BindView(R2.id.icon_back)
+    @BindView(R2.id.btn_back)
     protected ImageView mBackButton;
 
     @BindView(R2.id.net_error)
@@ -365,6 +365,11 @@ public class IjkVideoView extends FrameLayout implements
         mPresenter.handleLockLogic();
     }
 
+    @OnClick(R2.id.btn_back)
+    void clickBackBtn() {
+        changeUINormalScreen();
+    }
+
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -545,6 +550,8 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mTitleTextView);
         //隐藏视频返回键
         Utils.hideViewIfNeed(mBackButton);
+
+        Utils.hideViewIfNeed(mTopStatusView);
         //底部布局隐藏
         mBottomContainer.setVisibility(View.INVISIBLE);
         //loading 布局隐藏
@@ -601,11 +608,6 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     public void hidenAllView() {
         Utils.hideViewIfNeed(mTitleTextView);
-        Utils.hideViewIfNeed(mBackButton);
-        Utils.hideViewIfNeed(mWifiView);
-        Utils.hideViewIfNeed(mBatteryView);
-        Utils.hideViewIfNeed(mTimeView);
-        Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mStartButton);
         Utils.hideViewIfNeed(mBottomContainer);
     }
@@ -676,6 +678,10 @@ public class IjkVideoView extends FrameLayout implements
         mFullscreenButton.setImageResource(R.drawable.news_video_full_off);
 
         Utils.showViewIfNeed(mLockBtn);
+        Utils.showViewIfNeed(mWifiView);
+        Utils.showViewIfNeed(mBatteryView);
+        Utils.showViewIfNeed(mTimeView);
+        Utils.showViewIfNeed(mTopStatusView);
     }
 
     @Override
@@ -702,6 +708,12 @@ public class IjkVideoView extends FrameLayout implements
         if(mCurrentState != PlayState.STATE_AUTO_COMPLETE) {
             PlayerManager.getInstance().play();
         }
+        Utils.hideViewIfNeed(mLockBtn);
+        Utils.hideViewIfNeed(mBackButton);
+        Utils.hideViewIfNeed(mWifiView);
+        Utils.hideViewIfNeed(mBatteryView);
+        Utils.hideViewIfNeed(mTimeView);
+        Utils.hideViewIfNeed(mTopStatusView);
     }
 
     @Override

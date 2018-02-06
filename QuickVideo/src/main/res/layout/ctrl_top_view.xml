@@ -5,7 +5,7 @@
     android:background="@drawable/video_title_bg">
 
     <ImageView
-        android:id="@+id/icon_back"
+        android:id="@+id/btn_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
@@ -24,7 +24,7 @@
         android:layout_marginRight="@dimen/dimen_14"
         android:layout_marginTop="@dimen/dimen_13"
         android:layout_toLeftOf="@+id/system_status_view"
-        android:layout_toRightOf="@+id/icon_back"
+        android:layout_toRightOf="@+id/btn_back"
         android:ellipsize="end"
         android:text=""
         android:textColor="@color/video_title_text"

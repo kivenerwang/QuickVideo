@@ -13,7 +13,7 @@ public interface IjkVideoContract {
      * 视频UI实现类
      */
     interface IVideoView {
-        
+
         //正常屏幕下-视频进入初始化状态
         void changeUINormal();
 
