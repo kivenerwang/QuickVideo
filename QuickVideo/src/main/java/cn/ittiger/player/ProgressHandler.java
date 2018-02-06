@@ -41,7 +41,7 @@ public class ProgressHandler  extends Handler{
                 reference.get().updateBottomProgress();
                 break;
             case UPDATE_CONTROLLER_VIEW:
-                reference.get().updateControllerView();
+                reference.get().updateControllerView(msg);
                 break;
             default:
                 super.handleMessage(msg);

@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -38,10 +37,6 @@ import java.util.Observer;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.ittiger.player.PlayerManager;
-import cn.ittiger.player.ProgressHandler;
-import cn.ittiger.player.R;
-import cn.ittiger.player.R2;
 import cn.ittiger.player.message.DurationMessage;
 import cn.ittiger.player.message.Message;
 import cn.ittiger.player.message.UIStateMessage;
@@ -152,7 +147,7 @@ public class IjkVideoView extends FrameLayout implements
     @BindView(R2.id.video_tv_replay)
     protected TextView mReplayBtn;
 
-    @BindView(R2.id.lock_screen)
+    @BindView(R2.id.btn_lock)
     protected ImageView mLockBtn;
 
     @BindView(R2.id.video_cover_img)
@@ -365,6 +360,10 @@ public class IjkVideoView extends FrameLayout implements
         mPresenter.handleScreenRotate((Activity) getContext());
     }
 
+    @OnClick(R2.id.btn_lock)
+    void clickLockBtn() {
+        mPresenter.handleLockLogic();
+    }
 
 
     @Override
@@ -510,17 +509,6 @@ public class IjkVideoView extends FrameLayout implements
 
 
     /************************ UI状态更新 ********************************/
-    @Override
-    public void enterFullScreen() {
-        //设置全屏按钮
-        mFullscreenButton.setImageResource(R.drawable.news_video_full_off);
-        //设置返回按钮
-        mBackButton.setVisibility(View.VISIBLE);
-        //设置锁屏按钮
-        mLockBtn.setVisibility(VISIBLE);
-        //设置右上角wifi，电量，等view
-        mTopStatusView.setVisibility(VISIBLE);
-    }
 
     @Override
     public void changeUICompeted() {
@@ -628,7 +616,40 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mStartButton);
         Utils.showViewIfNeed(mBottomContainer);
         mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
-        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+        android.os.Message msg = new android.os.Message();
+        msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
+        msg.arg1 = ScreenState.SCREEN_STATE_NORMAL;
+        mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+    }
+
+    @Override
+    public void hideViewInFullScreenState() {
+        Utils.hideViewIfNeed(mTitleTextView);
+        Utils.hideViewIfNeed(mBackButton);
+        Utils.hideViewIfNeed(mWifiView);
+        Utils.hideViewIfNeed(mBatteryView);
+        Utils.hideViewIfNeed(mTimeView);
+        Utils.hideViewIfNeed(mReplayView);
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mBottomContainer);
+        Utils.hideViewIfNeed(mLockBtn);
+    }
+
+    @Override
+    public void showViewInFullScreenState() {
+        Utils.showViewIfNeed(mBackButton);
+        Utils.showViewIfNeed(mTitleTextView);
+        Utils.showViewIfNeed(mWifiView);
+        Utils.showViewIfNeed(mBatteryView);
+        Utils.showViewIfNeed(mTimeView);
+        Utils.showViewIfNeed(mStartButton);
+        Utils.showViewIfNeed(mBottomContainer);
+        Utils.showViewIfNeed(mLockBtn);
+        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
+        android.os.Message msg = new android.os.Message();
+        msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
+        msg.arg1 = ScreenState.SCREEN_STATE_FULLSCREEN;
+        mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
     }
 
     @Override
@@ -652,13 +673,9 @@ public class IjkVideoView extends FrameLayout implements
         Utils.getActivity(getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         PlayerManager.getInstance().play();
 
-//        //设置返回按钮
-//        mBackButton.setVisibility(View.VISIBLE);
-//        //设置锁屏按钮
-//        mLockBtn.setVisibility(VISIBLE);
-//        //设置右上角wifi，电量，等view
-//        mTopStatusView.setVisibility(VISIBLE);
         mFullscreenButton.setImageResource(R.drawable.news_video_full_off);
+
+        Utils.showViewIfNeed(mLockBtn);
     }
 
     @Override
@@ -693,6 +710,30 @@ public class IjkVideoView extends FrameLayout implements
                 .show();
     }
 
+    @Override
+    public void changeUILock() {
+        mLockBtn.setImageResource(R.drawable.news_video_lock_on);
+        Utils.hideViewIfNeed(mTitleTextView);
+        Utils.hideViewIfNeed(mBackButton);
+        Utils.hideViewIfNeed(mWifiView);
+        Utils.hideViewIfNeed(mBatteryView);
+        Utils.hideViewIfNeed(mTimeView);
+        Utils.hideViewIfNeed(mReplayView);
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mBottomContainer);
+        Utils.showViewIfNeed(mLockBtn);
+    }
+
+    @Override
+    public void changeuiUnLock() {
+        mLockBtn.setImageResource(R.drawable.news_video_lock_off);
+        Utils.showViewIfNeed(mTitleTextView);
+        Utils.showViewIfNeed(mStartButton);
+        Utils.showViewIfNeed(mBottomContainer);
+        Utils.showViewIfNeed(mBackButton);
+        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
+        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+    }
 
     /************************ 定时处理的工具 ********************************/
 
@@ -752,12 +793,15 @@ public class IjkVideoView extends FrameLayout implements
     /**
      * 更新视频控制界面
      */
-    public void updateControllerView() {
+    public void updateControllerView(android.os.Message msg) {
         if (mCurrentState != PlayState.STATE_NORMAL
                 && mCurrentState != PlayState.STATE_ERROR
                 && mCurrentState != PlayState.STATE_AUTO_COMPLETE) {
-            hidenAllView();
-            mLockBtn.setVisibility(INVISIBLE);
+            if (msg.arg1 ==ScreenState.SCREEN_STATE_FULLSCREEN) {
+                hideViewInFullScreenState();
+            } else if (msg.arg1 == ScreenState.SCREEN_STATE_NORMAL) {
+                hidenAllView();
+            }
         }
 
     }

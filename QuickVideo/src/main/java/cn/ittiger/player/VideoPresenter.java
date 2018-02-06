@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 
 import cn.ittiger.player.state.PlayState;
+import cn.ittiger.player.state.ScreenState;
 import cn.ittiger.player.view.IjkVideoContract;
 
 /**
@@ -15,6 +16,10 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     private IjkVideoContract.IVideoView mVideoView;
 
+    private boolean mLockState; //锁屏状态
+
+    private int mScreenState; //屏幕横竖屏状态
+
     public VideoPresenter(IjkVideoContract.IVideoView videoView) {
         this.mVideoView = videoView;
     }
@@ -22,6 +27,10 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     @Override
     public void handleVideoContainerLogic(int playState, boolean needHiden) {
+        if (mLockState) {
+            //屏幕锁住状态，不做任何处理。
+            return;
+        }
         switch (playState) {
             case PlayState.STATE_NORMAL:
                 mVideoView.startPlayVideo();
@@ -46,9 +55,11 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         if (activity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             //当前小屏，需要且成全屏
             mVideoView.changeUIFullScreen();
+            mScreenState = ScreenState.SCREEN_STATE_FULLSCREEN;
         } else {
             //当前屏幕是全屏，需要切出正常屏幕
             mVideoView.changeUINormalScreen();
+            mScreenState = ScreenState.SCREEN_STATE_NORMAL;
         }
     }
 
@@ -80,15 +91,41 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         }
     }
 
+    @Override
+    public void handleLockLogic() {
+        if (mLockState) {
+            mVideoView.changeuiUnLock();
+        } else {
+            mVideoView.changeUILock();
+        }
+        mLockState = !mLockState;
+    }
+
     /**
      * 处理播放
      * @param needHiden
      */
     private void handleViewState(boolean needHiden) {
+
+        if (ScreenState.isFullScreen(mScreenState)) {
+            //全屏操作操作
+            if (needHiden) {
+                //隐藏全屏状态下的UI控件
+                mVideoView.hideViewInFullScreenState();
+            } else {
+                mVideoView.showViewInFullScreenState();
+            }
+
+        } else {
+            //正常屏幕操作
+        }
+
         if (needHiden) {
             mVideoView.hidenAllView();
         } else {
             mVideoView.showAllView();
         }
     }
+
+
 }

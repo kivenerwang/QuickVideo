@@ -54,7 +54,7 @@
         android:visibility="gone" />
 
     <ImageView
-        android:id="@+id/lock_screen"
+        android:id="@+id/btn_lock"
         android:layout_width="@dimen/lockbtn_width"
         android:layout_height="@dimen/lockbtn_height"
         android:layout_gravity="center_vertical"
