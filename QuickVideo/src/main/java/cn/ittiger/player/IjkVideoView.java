@@ -795,7 +795,7 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void changeVolumeAnimation(float deltaY) {
+    public void changeVolumeAnimation() {
         Utils.showViewIfNeed(mPopView);
         Utils.showViewIfNeed(mPopIconView);
         Utils.showViewIfNeed(mPopContentView);
@@ -806,6 +806,12 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mLoadingView);
         mPopIconView.setImageResource(R.drawable.news_video_gesture_volume);
 
+
+    }
+
+
+    @Override
+    public void changeMediaVolume(float deltaY) {
         AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         int mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager
                 .STREAM_MUSIC);

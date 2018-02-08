@@ -61,7 +61,7 @@ public interface IjkVideoContract {
 
         void showPositionLiftAnimation(String seekTime, String totalTime);
 
-        void changeVolumeAnimation(float volumePercent);
+        void changeVolumeAnimation();
 
         void changeScreenBrightness(float deltaY);
 
@@ -72,6 +72,8 @@ public interface IjkVideoContract {
         void startDismissControlViewTimer();
 
         void showBrightnessAnimation();
+
+        void changeMediaVolume(float deltaY);
     }
 
     interface IVideoPresenter {

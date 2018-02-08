@@ -173,7 +173,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     private void handlVolumeChangeLogic(float deltaY) {
         deltaY = -deltaY;
 
-        mVideoView.changeVolumeAnimation(deltaY);
+        mVideoView.changeVolumeAnimation();
+        mVideoView.changeMediaVolume(deltaY);
     }
 
     private void handlePositionMoveLogic(float deltaX, int screenWidth) {
