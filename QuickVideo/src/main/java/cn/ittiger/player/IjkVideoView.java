@@ -755,8 +755,6 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mStartButton);
         Utils.showViewIfNeed(mBottomContainer);
         Utils.showViewIfNeed(mBackButton);
-        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
-        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
     }
 
     @Override
@@ -805,8 +803,6 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mPopTimeCtrlView);
         Utils.hideViewIfNeed(mLoadingView);
         mPopIconView.setImageResource(R.drawable.news_video_gesture_volume);
-
-
     }
 
 
@@ -953,7 +949,10 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     public void startDismissControlViewTimer() {
         if (mHandler != null) {
-            mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+            android.os.Message msg = new android.os.Message();
+            msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
+            msg.arg1 = ScreenState.SCREEN_STATE_FULLSCREEN;
+            mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
         }
     }
 

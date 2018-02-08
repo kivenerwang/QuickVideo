@@ -113,6 +113,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     public void handleLockLogic() {
         if (mLockState) {
             mVideoView.changeuiUnLock();
+            mVideoView.startDismissControlViewTimer();
         } else {
             mVideoView.changeUILock();
         }
