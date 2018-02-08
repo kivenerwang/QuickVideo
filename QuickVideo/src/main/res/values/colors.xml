@@ -15,24 +15,24 @@
     <color name="vp_fullscreen_att_seekbar_progress_color">#ffe72c00</color>
 
 
-    <!--2345 player-->
+    <!--player-->
 
-    <color name="player2345_transparent">#00000000</color>
-    <color name="player2345_mediacontroller_bg_pressed">#ff53c1bd</color>
-    <color name="player2345_mediacontroller_bg">#CC000000</color>
+    <color name="player_transparent">#00000000</color>
+    <color name="player_mediacontroller_bg_pressed">#ff53c1bd</color>
+    <color name="player_mediacontroller_bg">#CC000000</color>
 
-    <color name="player2345_white">#ffffffff</color>
-    <color name="player2345_black">#ff000000</color>
-    <color name="player2345_blue">#ff0000ff</color>
-    <color name="player2345_green">#ff00ff00</color>
-    <color name="player2345_red">#ffff0000</color>
-    <color name="player2345_higtlight">#ff0078f0</color>
-    <color name="player2345_durationtext">#ff7d7d7d</color>
-    <color name="player2345_background">#ffc3ddea</color>
-    <color name="player2345_yellow">#ffffcc00</color>
-    <color name="player2345_title">#ff274462</color>
+    <color name="player_white">#ffffffff</color>
+    <color name="player_black">#ff000000</color>
+    <color name="player_blue">#ff0000ff</color>
+    <color name="player_green">#ff00ff00</color>
+    <color name="player_red">#ffff0000</color>
+    <color name="player_higtlight">#ff0078f0</color>
+    <color name="player_durationtext">#ff7d7d7d</color>
+    <color name="player_background">#ffc3ddea</color>
+    <color name="player_yellow">#ffffcc00</color>
+    <color name="player_title">#ff274462</color>
 
-    <color name="player2345_clocktime">#ffffff</color>
+    <color name="player_clocktime">#ffffff</color>
     <color name="dialog_red_btn_color">#fb685f</color>
 
     <color name="dialog_blue_btn_color">#468ff7</color>

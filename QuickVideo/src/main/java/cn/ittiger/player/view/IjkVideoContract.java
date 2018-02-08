@@ -80,7 +80,7 @@ public interface IjkVideoContract {
         //处理视频container点击逻辑
         void handleVideoContainerLogic(int playState, boolean needHiden);
         //处理屏幕选择
-        void handleScreenRotate(Activity activity);
+        void handleScreenRotate(int screenType);
 
         void handleStartLogic(int mViewHash, String mVideoUrl, int state);
 

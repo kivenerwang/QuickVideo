@@ -69,8 +69,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleScreenRotate(Activity activity) {
-        if (activity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+    public void handleScreenRotate(int screenType) {
+        if (screenType == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             //当前小屏，需要且成全屏
             mVideoView.changeUIFullScreen();
             mScreenState = ScreenState.SCREEN_STATE_FULLSCREEN;
@@ -116,6 +116,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             mVideoView.startDismissControlViewTimer();
         } else {
             mVideoView.changeUILock();
+            mVideoView.cancleDismissControlViewTimer();
         }
         mLockState = !mLockState;
     }

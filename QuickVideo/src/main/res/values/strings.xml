@@ -71,9 +71,9 @@
     <string name="TrackType_unknown">Unknown</string>
 
 
-    <!--2345 player-->
+    <!--player-->
 
-    <string name="player_name">2345Player</string>
+    <string name="player_name">QuickPlayer</string>
     <string name="vitamio_library_app_name">VitamioLibrary</string>
     <string name="vitamio_init_decoders">Initializing decoders…</string>
     <string name="permission_group_tools_label">Vitamio tools</string>

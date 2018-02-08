@@ -38,7 +38,7 @@
         android:layout_width="@dimen/startbtn_width"
         android:layout_height="@dimen/startbtn_height"
         android:layout_gravity="center_vertical|center_horizontal"
-        android:background="@drawable/player2345_playbtn_bg"
+        android:background="@drawable/quick_player_playbtn_bg"
 
         android:visibility="visible" />
 
@@ -61,7 +61,7 @@
         android:layout_marginLeft="@dimen/lockbtn_margin_left"
         android:scaleType="centerInside"
         android:src="@drawable/news_video_lock_off"
-        android:background="@drawable/player2345_lockbtn_bg"
+        android:background="@drawable/quick_player_lockbtn_bg"
         android:visibility="gone" />
 
     <include

@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.TextureView;
@@ -359,7 +360,8 @@ public class IjkVideoView extends FrameLayout implements
 
     @OnClick(R2.id.btn_screen_rotate)
     void clickRotateBtn() {
-        mPresenter.handleScreenRotate((Activity) getContext());
+        Activity activity = (Activity) getContext();
+        mPresenter.handleScreenRotate(activity.getRequestedOrientation());
     }
 
     @OnClick(R2.id.btn_lock)
@@ -495,6 +497,24 @@ public class IjkVideoView extends FrameLayout implements
     }
 
 
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Activity activity = (Activity) getContext();
+            mPresenter.handleScreenRotate(activity.getRequestedOrientation());
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Activity activity = (Activity) getContext();
+            mPresenter.handleScreenRotate(activity.getRequestedOrientation());
+        }
+        return super.onKeyUp(keyCode, event);
+    }
 
     public ImageView getThumbImageView() {
 
@@ -983,7 +1003,6 @@ public class IjkVideoView extends FrameLayout implements
      * 请求获取AudioFocus
      */
     private void requestAudioFocus() {
-
         AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
     }

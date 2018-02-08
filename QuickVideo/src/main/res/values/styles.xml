@@ -1,8 +1,7 @@
 <resources>
-<!-- <item name="android:indeterminateDrawable">@drawable/player2345_progress_drawable</item> -->
 
     <style name="MediaController_Text">
-        <item name="android:textColor">@color/player2345_white</item>
+        <item name="android:textColor">@color/player_white</item>
         <item name="android:textSize">14sp</item>
     </style>
 

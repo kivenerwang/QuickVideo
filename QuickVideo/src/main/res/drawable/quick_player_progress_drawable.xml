@@ -12,15 +12,15 @@
 
     <item
         android:id="@android:id/background"
-        android:drawable="@drawable/player2345_track_holo_dark"></item>
+        android:drawable="@drawable/quick_player_track_holo_dark"></item>
     <item android:id="@android:id/progress">
          <clip
              android:clipOrientation="horizontal"
-             android:drawable="@drawable/player2345_primary_holo" />
+             android:drawable="@drawable/quick_player_primary_holo" />
       </item>
       <item android:id="@android:id/secondaryProgress">
           <scale
-              android:drawable="@drawable/player2345_secondary_holo"
+              android:drawable="@drawable/quick_player_secondary_holo"
               android:scaleWidth="100%" />
       </item>
 

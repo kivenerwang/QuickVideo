@@ -13,7 +13,7 @@
         android:paddingLeft="@dimen/dimen_20"
         android:paddingRight="5dp"
         android:paddingTop="5dp"
-        android:src="@drawable/player2345_backbtn_bg" />
+        android:src="@drawable/quick_player_backbtn_bg" />
 
     <TextView
         android:id="@+id/tv_title"
@@ -57,7 +57,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/dimen_15"
             android:layout_toLeftOf="@+id/time"
-            android:src="@drawable/player2345_battery"
+            android:src="@drawable/quick_player_battery"
             android:visibility="visible" />
 
         <cn.ittiger.player.view.DigitalClock
@@ -69,7 +69,7 @@
             android:layout_marginLeft="@dimen/dimen_15"
             android:layout_marginRight="@dimen/dimen_20"
             android:text="11:24"
-            android:textColor="@color/player2345_clocktime"
+            android:textColor="@color/player_clocktime"
             android:textSize="13sp"
             android:visibility="visible" />
     </LinearLayout>
