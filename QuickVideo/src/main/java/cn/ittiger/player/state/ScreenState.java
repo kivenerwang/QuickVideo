@@ -19,6 +19,26 @@ public final class ScreenState {
      */
     public static final int SCREEN_STATE_SMALL_WINDOW = 3;
 
+    private int mScreenWidth;
+
+    private int mScreenHight;
+
+    public int getScreenHight() {
+        return mScreenHight;
+    }
+
+    public void setScreenHight(int mScreenHight) {
+        this.mScreenHight = mScreenHight;
+    }
+
+    public int getScreenWidth() {
+        return mScreenWidth;
+    }
+
+    public void setScreenWidth(int mScreenWidth) {
+        this.mScreenWidth = mScreenWidth;
+    }
+
     public static boolean isFullScreen(int screenState) {
 
         return screenState == SCREEN_STATE_FULLSCREEN;

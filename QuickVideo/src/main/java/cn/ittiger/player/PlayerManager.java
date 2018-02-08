@@ -35,6 +35,7 @@ public final class PlayerManager implements IPlayer.PlayCallback {
     private int mObserverHash = -1;
     private int mScreenState = ScreenState.SCREEN_STATE_NORMAL;
     private Config mConfig;
+    private int mTotalTime;
 
     private PlayerManager(Config config) {
 
@@ -275,9 +276,13 @@ public final class PlayerManager implements IPlayer.PlayCallback {
         changeUIState(state);
     }
 
+    public void setTotalTime(int mTotalTime) {
+        this.mTotalTime = mTotalTime;
+    }
+
     @Override
     public void onDurationChanged(int duration) {
-
+        setTotalTime(duration);
         mPlayStateObservable.notify(new DurationMessage(mObserverHash, mVideoUrl, duration));
     }
 
@@ -306,6 +311,10 @@ public final class PlayerManager implements IPlayer.PlayCallback {
     public void setScreenState(int screenState) {
 
         mScreenState = screenState;
+    }
+
+    public int getTotalTime() {
+        return mTotalTime;
     }
 
     class PlayStateObservable extends Observable {

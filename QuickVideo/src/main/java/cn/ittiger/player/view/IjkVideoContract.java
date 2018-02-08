@@ -1,6 +1,7 @@
 package cn.ittiger.player.view;
 
 import android.app.Activity;
+import android.view.MotionEvent;
 
 /**
  * Ijk 视频协议类，定义一些逻辑和UI的操作
@@ -55,6 +56,22 @@ public interface IjkVideoContract {
         void hideViewInFullScreenState();
 
         void showViewInFullScreenState();
+
+        void showPositionRightAnimation(String seekTime, String totalTime);
+
+        void showPositionLiftAnimation(String seekTime, String totalTime);
+
+        void changeVolumeAnimation(float volumePercent);
+
+        void changeScreenBrightness(float deltaY);
+
+        void hidePopView();
+
+        void cancleDismissControlViewTimer();
+
+        void startDismissControlViewTimer();
+
+        void showBrightnessAnimation();
     }
 
     interface IVideoPresenter {
@@ -66,6 +83,8 @@ public interface IjkVideoContract {
         void handleStartLogic(int mViewHash, String mVideoUrl, int state);
 
         void handleLockLogic();
+
+        boolean handleContainerTouchLogic(int playState, MotionEvent event, int width, int screenWidth);
     }
 
 

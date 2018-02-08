@@ -1,11 +1,15 @@
 package cn.ittiger.player;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.media.AudioManager;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 
 import cn.ittiger.player.state.PlayState;
 import cn.ittiger.player.state.ScreenState;
+import cn.ittiger.player.util.Utils;
 import cn.ittiger.player.view.IjkVideoContract;
 
 /**
@@ -19,6 +23,20 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     private boolean mLockState; //锁屏状态
 
     private int mScreenState; //屏幕横竖屏状态
+
+    private float mLastPositonX; //上次触摸的位置
+
+    private float mLastPositonY; //上次触摸的位置
+
+    protected int THRES_HOLD = 80; //手势偏差值
+
+    private boolean isLastTouchFinish = false;
+
+    private static final int TOUCH_TYPE_HORIZONTAL = 1;
+    //竖向触摸屏幕左边
+    private static final int TOUCH_TYPE_VERTICAL_LEFT = 2;
+    //竖向触摸屏幕右边
+    private static final int TOUCH_TYPE_VERTICAL_RIGHT =3;
 
     public VideoPresenter(IjkVideoContract.IVideoView videoView) {
         this.mVideoView = videoView;
@@ -101,6 +119,124 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         mLockState = !mLockState;
     }
 
+    @Override
+    public boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight) {
+        //1.判断屏幕状态
+        if (!ScreenState.isFullScreen(mScreenState)) {
+            //非全屏状态返回
+            return false;
+        }
+        //2.判断锁屏状态
+        if (mLockState) {
+            return false;
+        }
+        //3.判断播放状态
+        if (playState != PlayState.STATE_PLAYING &&  playState != PlayState.STATE_PAUSE && playState != PlayState.STATE_PLAYING_BUFFERING_START) {
+            return false;
+        }
+        int touchType = -1;
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            mLastPositonX = event.getX();
+            mLastPositonY = event.getY();
+            isLastTouchFinish = true;
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            //首先判断触摸事件的类型是横向滑动还是纵向滑动
+            if (isLastTouchFinish) {
+                touchType = getTouchType(event, screenWidth);
+            }
+            if (touchType == TOUCH_TYPE_HORIZONTAL) {
+                float deltaX = event.getX() - mLastPositonX;
+                handlePositionMoveLogic(deltaX, screenWidth);
+            } else if (touchType ==  TOUCH_TYPE_VERTICAL_RIGHT) {
+                float deltaY = event.getY() - mLastPositonY;
+                handlVolumeChangeLogic(deltaY);
+            } else if (touchType == TOUCH_TYPE_VERTICAL_LEFT) {
+                float deltaY = event.getY() - mLastPositonY;
+                deltaY = (-deltaY / screenHight);
+                mVideoView.changeScreenBrightness(deltaY);
+                mVideoView.showBrightnessAnimation();
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            mVideoView.hidePopView();
+        }
+        //最后计时器再次处理
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            mVideoView.cancleDismissControlViewTimer();
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            mVideoView.startDismissControlViewTimer();
+            isLastTouchFinish = true;
+        }
+        return false;
+    }
+
+    private void handlVolumeChangeLogic(float deltaY) {
+        deltaY = -deltaY;
+
+        mVideoView.changeVolumeAnimation(deltaY);
+    }
+
+    private void handlePositionMoveLogic(float deltaX, int screenWidth) {
+        int seekPostition;
+        int downPostion = PlayerManager.getInstance().getCurrentPosition();
+        int videoTime = PlayerManager.getInstance().getTotalTime();
+        if (deltaX > 0) {
+            seekPostition = (int) (downPostion + (deltaX - THRES_HOLD) *
+                    videoTime / screenWidth);
+        } else {
+            seekPostition = (int) (downPostion + (deltaX + THRES_HOLD) *
+                    videoTime / screenWidth);
+        }
+        if (seekPostition < 0){
+            seekPostition = 0;
+        }
+        if (seekPostition > videoTime){
+            seekPostition = videoTime;
+        }
+        String seekTime = Utils.stringForTime(seekPostition);
+        String totalTime = Utils.stringForTime(videoTime);
+        if (deltaX > 0) {
+            //向右移动
+            mVideoView.showPositionRightAnimation(seekTime, totalTime);
+        } else {
+            mVideoView.showPositionLiftAnimation(seekTime, totalTime);
+        }
+    }
+
+    /**
+     * 获取触摸的类型
+     * @param event
+     * @return
+     */
+    private int getTouchType(MotionEvent event, int screenWidth) {
+        int type = 0;
+        float delteX = event.getX() - mLastPositonX;
+        float delteY = event.getY() - mLastPositonY;
+        float absDelteX = Math.abs(delteX);
+        float absDelteY = Math.abs(delteY);
+        if (absDelteX > THRES_HOLD) {
+            //横向滑动
+            isLastTouchFinish = false;
+            return TOUCH_TYPE_HORIZONTAL;
+        } else if (absDelteY > THRES_HOLD) {
+            // 纵向滑动
+            if (isLastTouchFinish) {
+                if (mLastPositonX < screenWidth * 0.5) {
+                    type =  TOUCH_TYPE_VERTICAL_LEFT;
+                    isLastTouchFinish = false;
+                    return type;
+                }
+            }
+            if (type != TOUCH_TYPE_VERTICAL_LEFT) {
+                type = TOUCH_TYPE_VERTICAL_RIGHT;
+                isLastTouchFinish = false;
+                return type;
+            }
+        }
+
+        return type;
+    }
+
     /**
      * 处理播放
      * @param needHiden
@@ -118,13 +254,14 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
         } else {
             //正常屏幕操作
+            if (needHiden) {
+                mVideoView.hidenAllView();
+            } else {
+                mVideoView.showAllView();
+            }
         }
 
-        if (needHiden) {
-            mVideoView.hidenAllView();
-        } else {
-            mVideoView.showAllView();
-        }
+
     }
 
 

@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,6 +38,7 @@ import java.util.Observer;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTouch;
 import cn.ittiger.player.message.DurationMessage;
 import cn.ittiger.player.message.Message;
 import cn.ittiger.player.message.UIStateMessage;
@@ -85,13 +87,13 @@ public class IjkVideoView extends FrameLayout implements
     FrameLayout mPopContentView;
 
     @BindView(R2.id.tv_current)
-    TextView mCurrentTimeView;
+    TextView mPopCurTimeView;
 
     @BindView(R2.id.tv_duration)
-    protected TextView totalTimeText;
+    protected TextView mPopTotalTimeView;
 
     @BindView(R2.id.video_pop_progress)
-    protected ProgressBar popProgressBar;
+    protected ProgressBar mPopPregressBar;
 
     @BindView(R2.id.bottom_seekbar)
     protected SeekBar mBottomSeekBar;
@@ -103,13 +105,13 @@ public class IjkVideoView extends FrameLayout implements
     protected ImageView mFullscreenButton;
 
     @BindView(R2.id.bottom_tv_current)
-    protected TextView mCurrentTimeTextView;
+    protected TextView mBottomCurTimeView;
 
     @BindView(R2.id.bottom_tv_total)
     protected TextView mTotalTimeTextView;
 
     @BindView(R2.id.loading)
-    RelativeLayout mLoadingProgressBar;
+    RelativeLayout mLoadingView;
 
     @BindView(R2.id.layout_top)
     ViewGroup mTopContainer;
@@ -160,6 +162,8 @@ public class IjkVideoView extends FrameLayout implements
     TextView mBufferTextView; // 网络缓冲速度
 
     protected Bitmap mFullPauseBitmap = null;//暂停时的全屏图片；
+
+    protected float mBrightnessData;
     /**
      * 视频时长，miliseconds
      */
@@ -176,7 +180,7 @@ public class IjkVideoView extends FrameLayout implements
     /**
      * 屏幕高度
      */
-    private int mScreenHeight;
+    private int mScreenHight;
     /**
      * 小窗口的宽度
      */
@@ -294,8 +298,6 @@ public class IjkVideoView extends FrameLayout implements
 
     private void initData(Context context) {
         mViewHash = this.toString().hashCode();
-        mScreenWidth = Utils.getWindowWidth(context);
-        mScreenHeight = Utils.getWindowHeight(context);
         mSmallWindowWidth = mScreenWidth / 2;
         mSmallWindowHeight = (int) (mSmallWindowWidth * 1.0f / 16 * 9 + 0.5f);
         mHandler = new ProgressHandler(this);
@@ -368,6 +370,16 @@ public class IjkVideoView extends FrameLayout implements
     @OnClick(R2.id.btn_back)
     void clickBackBtn() {
         changeUINormalScreen();
+    }
+
+
+
+    @OnTouch(R2.id.surface_container)
+    boolean onTouchContainer(MotionEvent event) {
+        mScreenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+        mScreenHight = getContext().getResources().getDisplayMetrics().heightPixels;
+
+        return mPresenter.handleContainerTouchLogic(mCurrentState, event, mScreenWidth, mScreenHight);
     }
 
 
@@ -532,7 +544,7 @@ public class IjkVideoView extends FrameLayout implements
     public void changeUILoading() {
 
         Utils.hideViewIfNeed(mStartButton);
-        Utils.showViewIfNeed(mLoadingProgressBar);
+        Utils.showViewIfNeed(mLoadingView);
     }
 
     @Override
@@ -555,7 +567,7 @@ public class IjkVideoView extends FrameLayout implements
         //底部布局隐藏
         mBottomContainer.setVisibility(View.INVISIBLE);
         //loading 布局隐藏
-        mLoadingProgressBar.setVisibility(View.INVISIBLE);
+        mLoadingView.setVisibility(View.INVISIBLE);
         //锁屏按钮隐藏
         mLockBtn.setVisibility(GONE);
         //重播按钮隐藏
@@ -574,7 +586,7 @@ public class IjkVideoView extends FrameLayout implements
         //顶部title显示
         Utils.showViewIfNeed(mTitleTextView);
         //loading 布局隐藏
-        mLoadingProgressBar.setVisibility(View.INVISIBLE);
+        mLoadingView.setVisibility(View.INVISIBLE);
         //开始按钮显示
         mStartButton.setVisibility(View.VISIBLE);
         mStartButton.setImageResource(R.drawable.news_video_start);
@@ -593,7 +605,7 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mVideoThumbView);
 
         Utils.hideViewIfNeed(mReplayView);
-        Utils.hideViewIfNeed(mLoadingProgressBar);
+        Utils.hideViewIfNeed(mLoadingView);
 
         mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
         mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
@@ -601,7 +613,7 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUIBuffer() {
-        Utils.showViewIfNeed(mLoadingProgressBar);
+        Utils.showViewIfNeed(mLoadingView);
         Utils.hideViewIfNeed(mStartButton);
     }
 
@@ -747,6 +759,112 @@ public class IjkVideoView extends FrameLayout implements
         mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
     }
 
+    @Override
+    public void showPositionLiftAnimation(String seekTime, String totalTime) {
+        Utils.showViewIfNeed(mPopView);
+        Utils.showViewIfNeed(mPopIconView);
+        Utils.showViewIfNeed(mPopTimeCtrlView);
+        Utils.showViewIfNeed(mPopPregressBar);
+        Utils.showViewIfNeed(mPopCurTimeView);
+        Utils.showViewIfNeed(mPopTotalTimeView);
+
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mLoadingView);
+        Utils.hideViewIfNeed(mPopPregressBar);
+
+        mPopCurTimeView.setText(seekTime);
+        mPopTotalTimeView.setText(" / " + totalTime);
+        mPopIconView.setImageResource(R.drawable.news_video_gesture_backward);
+    }
+
+    @Override
+    public void showPositionRightAnimation(String seekTime, String totalTime) {
+        Utils.showViewIfNeed(mPopView);
+        Utils.showViewIfNeed(mPopIconView);
+        Utils.showViewIfNeed(mPopTimeCtrlView);
+        Utils.showViewIfNeed(mPopCurTimeView);
+        Utils.showViewIfNeed(mPopTotalTimeView);
+
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mPopPregressBar);
+        Utils.hideViewIfNeed(mLoadingView);
+
+        mPopCurTimeView.setText(seekTime);
+        mPopTotalTimeView.setText(" / " + totalTime);
+        mPopIconView.setImageResource(R.drawable.news_video_gesture_forward);
+    }
+
+    @Override
+    public void changeVolumeAnimation(float deltaY) {
+        Utils.showViewIfNeed(mPopView);
+        Utils.showViewIfNeed(mPopIconView);
+        Utils.showViewIfNeed(mPopContentView);
+        Utils.showViewIfNeed(mPopPregressBar);
+
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mPopTimeCtrlView);
+        Utils.hideViewIfNeed(mLoadingView);
+        mPopIconView.setImageResource(R.drawable.news_video_gesture_volume);
+
+        AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        int mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager
+                .STREAM_MUSIC);
+        int mAudioMaxValue = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int deltaV = (int) (mAudioMaxValue * deltaY * 3 / mScreenHight);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume +
+                deltaV, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        int volumePercent = (int) (mGestureDownVolume * 100 / mAudioMaxValue + deltaY * 3 *
+                100 / mScreenHight);
+
+        mPopPregressBar.setProgress(volumePercent);
+    }
+
+    @Override
+    public void changeScreenBrightness(float deltaY) {
+        Activity activity = (Activity) getContext();
+        float brightnessData = activity.getWindow().getAttributes().screenBrightness;
+        if (brightnessData <= 0.00f) {
+            brightnessData = 0.50f;
+        } else if (brightnessData < 0.01f) {
+            brightnessData = 0.01f;
+        }
+        WindowManager.LayoutParams lpa = activity.getWindow().getAttributes();
+        lpa.screenBrightness = brightnessData + deltaY;
+        if (lpa.screenBrightness > 1.0f) {
+            lpa.screenBrightness = 1.0f;
+        } else if (lpa.screenBrightness < 0.01f) {
+            lpa.screenBrightness = 0.01f;
+        }
+        activity.getWindow().setAttributes(lpa);
+    }
+
+    @Override
+    public void showBrightnessAnimation() {
+        Utils.showViewIfNeed(mPopView);
+        Utils.showViewIfNeed(mPopContentView);
+        Utils.showViewIfNeed(mPopIconView);
+        Utils.showViewIfNeed(mPopPregressBar);
+
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mLoadingView);
+        Utils.hideViewIfNeed(mPopTimeCtrlView);
+        mPopIconView.setImageResource(R.drawable.news_video_gesture_brightness);
+        Activity activity = (Activity) getContext();
+        float percent = activity.getWindow().getAttributes().screenBrightness * 100;
+        mPopPregressBar.setProgress((int) percent);
+    }
+
+    @Override
+    public void hidePopView() {
+        Utils.hideViewIfNeed(mPopView);
+        Utils.hideViewIfNeed(mPopTimeCtrlView);
+        Utils.hideViewIfNeed(mPopPregressBar);
+        Utils.hideViewIfNeed(mPopIconView);
+        Utils.hideViewIfNeed(mPopContentView);
+        Utils.hideViewIfNeed(mPopCurTimeView);
+        Utils.hideViewIfNeed(mPopTotalTimeView);
+    }
+
     /************************ 定时处理的工具 ********************************/
 
     /**
@@ -793,7 +911,7 @@ public class IjkVideoView extends FrameLayout implements
             mTotalTimeTextView.setText(Utils.stringForTime(totalTime));
         }
         if (position > 0) {
-            mCurrentTimeTextView.setText(Utils.stringForTime(position));
+            mBottomCurTimeView.setText(Utils.stringForTime(position));
         }
 
         if (!mHandler.hasMessages (ProgressHandler.UPDATE_BOTTOM_PROGRESS) && (PlayerManager.getInstance().isPlaying() || mCurrentState == PlayState.STATE_PLAYING)) {
@@ -818,6 +936,20 @@ public class IjkVideoView extends FrameLayout implements
 
     }
 
+
+    @Override
+    public void cancleDismissControlViewTimer() {
+        if (mHandler != null) {
+            mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
+        }
+    }
+
+    @Override
+    public void startDismissControlViewTimer() {
+        if (mHandler != null) {
+            mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+        }
+    }
 
     /**
      * 开始播放视频
