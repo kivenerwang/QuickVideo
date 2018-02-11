@@ -103,6 +103,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 //当前暂停状态，需要显示startbtn
                 handleViewState(false);
                 break;
+            default:
+                break;
         }
     }
 
@@ -164,6 +166,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             case PlayState.STATE_AUTO_COMPLETE:
                 PlayerManager.getInstance().seekTo(0);
                 PlayerManager.getInstance().play();
+                break;
+            default:
                 break;
         }
     }

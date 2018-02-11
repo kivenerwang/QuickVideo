@@ -1020,6 +1020,8 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
                     case MEDIA_INFO_VIDEO_RENDERING_START:
                         DebugLog.i(TAG, "Info: MEDIA_INFO_VIDEO_RENDERING_START\n");
                         break;
+                    default:
+                        break;
                 }
                 player.notifyOnInfo(msg.arg1, msg.arg2);
                 // No real default action so far.

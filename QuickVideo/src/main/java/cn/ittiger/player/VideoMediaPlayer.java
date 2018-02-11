@@ -98,6 +98,7 @@ public class VideoMediaPlayer extends AbsSimplePlayer implements
                         e.printStackTrace();
                     }
                     break;
+                default:
             }
         }
     }

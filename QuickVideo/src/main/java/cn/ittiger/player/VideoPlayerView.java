@@ -332,6 +332,8 @@ public class VideoPlayerView extends RelativeLayout implements
                     PlayerManager.getInstance().seekTo(0);
                     PlayerManager.getInstance().play();
                     break;
+                default:
+                    break;
             }
         } else if(R.id.vp_video_thumb == id) {
             startPlayVideo();
@@ -1621,11 +1623,11 @@ public class VideoPlayerView extends RelativeLayout implements
 
     private boolean isScrollVerticalRight(float downX, MotionEvent e2) {
 
-        return downX > mScreenWidth / 2 && e2.getRawX() > mScreenWidth / 2;
+        return downX > mScreenWidth / (double) 2 && e2.getRawX() > mScreenWidth / (double) 2;
     }
 
     private boolean isScrollVerticalLeft(float downX, MotionEvent e2) {
 
-        return downX < mScreenWidth / 2 && e2.getRawX() < mScreenWidth / 2;
+        return downX < mScreenWidth / (double) 2 && e2.getRawX() < mScreenWidth / (double) 2;
     }
 }

@@ -257,7 +257,6 @@ public final class PlayerManager implements IPlayer.PlayCallback {
     @Override
     public void onError(String error) {
 
-        Utils.log("error video, error= " +  error == null ? "null" : error + ", url=" + mVideoUrl);
         if(!TextUtils.isEmpty(error)) {
             Log.d(TAG, error);
         }

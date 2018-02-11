@@ -853,11 +853,11 @@ public class IjkVideoView extends FrameLayout implements
         int mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager
                 .STREAM_MUSIC);
         int mAudioMaxValue = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        int deltaV = (int) (mAudioMaxValue * deltaY * 3 / mScreenHight);
+        int deltaV = (int) (mAudioMaxValue * deltaY * 3 / (double)mScreenHight);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume +
                 deltaV, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-        int volumePercent = (int) (mGestureDownVolume * 100 / mAudioMaxValue + deltaY * 3 *
-                100 / mScreenHight);
+        int volumePercent = (int) (mGestureDownVolume * 100 / (double) (mAudioMaxValue + deltaY * 3 *
+                100 / mScreenHight));
 
         mPopPregressBar.setProgress(volumePercent);
     }
