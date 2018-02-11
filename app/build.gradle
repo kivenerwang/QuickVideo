@@ -36,6 +36,7 @@ dependencies {
 
 //    compile 'cn.ittiger:TigerVideoPlayer:1.2'
     compile project(':QuickVideo')
+    compile project(':commonutil')
     compile 'cn.ittiger:tigerdb:1.0'
 
     //butterknife
@@ -62,4 +63,6 @@ dependencies {
     //mosby
     compile 'com.hannesdorfmann.mosby:mvp:2.0.1'
     compile 'com.hannesdorfmann.mosby:viewstate:2.0.1'
+
+
 }

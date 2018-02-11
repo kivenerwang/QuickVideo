@@ -30,6 +30,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.commonutil.KeyMsgEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -271,12 +276,14 @@ public class IjkVideoView extends FrameLayout implements
         super.onAttachedToWindow();
         mToggleFullScreen = false;
         PlayerManager.getInstance().addObserver(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         PlayerManager.getInstance().removeObserver(this);
+        EventBus.getDefault().unregister(this);
         if (mToggleFullScreen) {
             return;
         }
@@ -294,6 +301,7 @@ public class IjkVideoView extends FrameLayout implements
         //避免ListView中item点击无法响应的问题
         setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
         setBackgroundColor(Color.BLACK);
+        videoView.setFocusable(true);
         mPresenter = new VideoPresenter(this);
     }
 
@@ -334,7 +342,6 @@ public class IjkVideoView extends FrameLayout implements
         }
         resetViewState();
     }
-
 
 
     @Override
@@ -496,13 +503,21 @@ public class IjkVideoView extends FrameLayout implements
         }
     }
 
+    @Subscribe
+    public void onKeyEvent(KeyMsgEvent msg) {
+        if (msg != null && msg.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            Activity activity = (Activity) getContext();
+            mPresenter.handleScreenRotate(activity.getRequestedOrientation());
+            return;
+        }
+    }
 
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Activity activity = (Activity) getContext();
-            mPresenter.handleScreenRotate(activity.getRequestedOrientation());
+
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -512,6 +527,7 @@ public class IjkVideoView extends FrameLayout implements
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Activity activity = (Activity) getContext();
             mPresenter.handleScreenRotate(activity.getRequestedOrientation());
+            return true;
         }
         return super.onKeyUp(keyCode, event);
     }

@@ -139,4 +139,7 @@ public abstract class VideoFragment extends
         mVideoAdapter = null;
         PlayerManager.getInstance().stop();
     }
+
+
+
 }

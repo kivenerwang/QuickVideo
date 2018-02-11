@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TigerVideo</string>
+    <string name="app_name">QuickVideo</string>
     <string name="action_settings">Settings</string>
 
     <string name="two_click_exit_app">再按一次退出程序</string>

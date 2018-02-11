@@ -1,1 +1,1 @@
-include ':app', ':QuickVideo'
+include ':app', ':QuickVideo', ':commonutil'

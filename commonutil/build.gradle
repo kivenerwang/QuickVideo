@@ -1,21 +1,17 @@
 apply plugin: 'com.android.library'
 
-apply plugin: 'com.jakewharton.butterknife'
-
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
 
-    sourceSets.main {
-        jni.srcDirs = []
-        jniLibs.srcDirs = ['libs']
-    }
+
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 5
-        versionName "1.4"
+        versionCode 1
+        versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -23,17 +19,9 @@ android {
         }
     }
 
-
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.danikula:videocache:2.7.0'
-    compile project(':commonutil')
-
-    //butterknife
-    compile 'com.jakewharton:butterknife:8.4.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-
+    compile 'org.greenrobot:eventbus:3.1.1'
 }
-//apply from: "bintrayUpload.gradle"

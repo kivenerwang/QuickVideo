@@ -1,5 +1,6 @@
 package cn.ittiger.video.activity;
 
+import com.example.commonutil.KeyMsgEvent;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import android.annotation.TargetApi;
@@ -15,9 +16,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -156,22 +161,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private long exitTime = 0;
 
-    @Override
-    public void onBackPressed() {
 
-        if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-            return;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if(mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return false;
+            } else {
+                EventBus.getDefault().post(new KeyMsgEvent(keyCode));
+                return false;
+            }
         }
-        if(System.currentTimeMillis() - exitTime > 2000) {
-            UIUtil.showToast(this, R.string.two_click_exit_app);
-            exitTime = System.currentTimeMillis();
-        } else {
-            finish();
-            System.exit(0);
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
+        return super.onKeyDown(keyCode, event);
     }
+
+    private void doubleClickExit() {
+
+            if(System.currentTimeMillis() - exitTime > 2000) {
+                UIUtil.showToast(this, R.string.two_click_exit_app);
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+    }
+
 
     /**
      * 切换界面
