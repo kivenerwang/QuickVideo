@@ -74,6 +74,12 @@ public interface IjkVideoContract {
         void showBrightnessAnimation();
 
         void changeMediaVolume(float deltaY);
+
+        void showMobileDataDialog();
+
+        void showMobileToast();
+
+        void hideMobileDataDialog();
     }
 
     interface IVideoPresenter {
@@ -87,6 +93,12 @@ public interface IjkVideoContract {
         void handleLockLogic();
 
         boolean handleContainerTouchLogic(int playState, MotionEvent event, int width, int screenWidth);
+
+        void handleNetChangeLogic(int netType);
+
+        void handleStopPlayMobileDataLogic();
+
+        void handleContinuePlayMobileDataLogic();
     }
 
 

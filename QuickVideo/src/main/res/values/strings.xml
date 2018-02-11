@@ -125,6 +125,7 @@
     <string name="video_total_time">/ 05:10</string>
     <string name="text_buffer">0%</string>
     <string name="tv_replay">重播</string>
+    <string name="tips_play_mobile_data">正在使用流量播放</string>
 
 
 </resources>

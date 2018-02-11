@@ -29,7 +29,7 @@
         android:layout_below="@id/dialog_bottom_divider"/>
 
     <TextView
-        android:id="@+id/confirm"
+        android:id="@+id/btn_confirm"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_52dp"
         android:background="@drawable/dialog_btn_right"

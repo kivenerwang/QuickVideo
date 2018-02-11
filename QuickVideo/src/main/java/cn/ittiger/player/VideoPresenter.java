@@ -1,9 +1,7 @@
 package cn.ittiger.player;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.media.AudioManager;
+import android.net.ConnectivityManager;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 
@@ -32,6 +30,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     private boolean isLastTouchFinish = false;
 
+    private boolean mNeedShowWifiTip = true;
+
     private static final int TOUCH_TYPE_HORIZONTAL = 1;
     //竖向触摸屏幕左边
     private static final int TOUCH_TYPE_VERTICAL_LEFT = 2;
@@ -42,6 +42,31 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         this.mVideoView = videoView;
     }
 
+
+    @Override
+    public void handleNetChangeLogic(int netType) {
+        if (PlayerManager.getInstance().isPlaying()) {
+            if (netType ==  ConnectivityManager.TYPE_WIFI) {
+
+            } else if (netType == ConnectivityManager.TYPE_MOBILE) {
+                handleMobileDataLogic();
+            } else if (netType == -1) {
+
+            }
+        }
+    }
+
+    /**
+     * 处理当前流量情况下的逻辑
+     */
+    private void handleMobileDataLogic() {
+        if (isNeedShowWifiTip()) {
+            PlayerManager.getInstance().pause();
+            mVideoView.showMobileDataDialog();
+        } else {
+            mVideoView.showMobileToast();
+        }
+    }
 
     @Override
     public void handleVideoContainerLogic(int playState, boolean needHiden) {
@@ -267,5 +292,25 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     }
 
+    @Override
+    public void handleContinuePlayMobileDataLogic() {
+        setNeedShowWifiTip(false);
+        PlayerManager.getInstance().play();
+    }
 
+
+
+    @Override
+    public void handleStopPlayMobileDataLogic() {
+        setNeedShowWifiTip(true);
+        mVideoView.hideMobileDataDialog();
+    }
+
+    public boolean isNeedShowWifiTip() {
+        return mNeedShowWifiTip;
+    }
+
+    public void setNeedShowWifiTip(boolean mNeedShowWifiTip) {
+        this.mNeedShowWifiTip = mNeedShowWifiTip;
+    }
 }

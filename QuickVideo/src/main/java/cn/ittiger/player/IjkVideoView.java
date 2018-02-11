@@ -2,11 +2,11 @@ package cn.ittiger.player;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.commonutil.KeyMsgEvent;
+import com.example.commonutil.NetMsgEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -52,6 +53,7 @@ import cn.ittiger.player.state.PlayState;
 import cn.ittiger.player.state.ScreenState;
 import cn.ittiger.player.util.Utils;
 import cn.ittiger.player.view.BatteryView;
+import cn.ittiger.player.view.CustomDialog;
 import cn.ittiger.player.view.DigitalClock;
 import cn.ittiger.player.view.IjkVideoContract;
 import cn.ittiger.player.view.NetStatusView;
@@ -167,6 +169,8 @@ public class IjkVideoView extends FrameLayout implements
     @BindView(R2.id.player_buffer)
     TextView mBufferTextView; // 网络缓冲速度
 
+    private CustomDialog netDialog;
+
     protected Bitmap mFullPauseBitmap = null;//暂停时的全屏图片；
 
     protected float mBrightnessData;
@@ -213,6 +217,9 @@ public class IjkVideoView extends FrameLayout implements
     private int mCurrentScreenState = ScreenState.SCREEN_STATE_NORMAL;
 
     private VideoPresenter mPresenter;
+
+
+
 
     /**
      * 正常状态下的标题是否显示
@@ -346,7 +353,12 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void onClick(View v) {
-
+        int id = v.getId();
+        if (id == R.id.btn_cancel) {
+            mPresenter.handleStopPlayMobileDataLogic();
+        } else if (id == R.id.btn_confirm) {
+            mPresenter.handleContinuePlayMobileDataLogic();
+        }
     }
 
     @OnClick(R2.id.surface_container)
@@ -507,30 +519,22 @@ public class IjkVideoView extends FrameLayout implements
     public void onKeyEvent(KeyMsgEvent msg) {
         if (msg != null && msg.getKeyCode() == KeyEvent.KEYCODE_BACK) {
             Activity activity = (Activity) getContext();
-            mPresenter.handleScreenRotate(activity.getRequestedOrientation());
+            int screenType = activity.getRequestedOrientation();
+            if (screenType == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                mPresenter.handleScreenRotate(screenType);
+                return;
+            }
+        }
+    }
+
+    @Subscribe
+    public void onNetChange(NetMsgEvent event) {
+        if (event == null) {
             return;
         }
+        mPresenter.handleNetChangeLogic(event.getNetType());
     }
 
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Activity activity = (Activity) getContext();
-            mPresenter.handleScreenRotate(activity.getRequestedOrientation());
-            return true;
-        }
-        return super.onKeyUp(keyCode, event);
-    }
 
     public ImageView getThumbImageView() {
 
@@ -901,6 +905,37 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mPopContentView);
         Utils.hideViewIfNeed(mPopCurTimeView);
         Utils.hideViewIfNeed(mPopTotalTimeView);
+    }
+
+    @Override
+    public void showMobileDataDialog() {
+        netDialog = new CustomDialog(getContext());
+        netDialog.nightMode(false);
+        netDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (dialog != null) {
+                        dialog.dismiss();
+                    }
+                }
+                return false;
+            }
+        });
+        netDialog.setNegativeButtonListener(this);
+        netDialog.setPositiveButtonListener(this);
+    }
+
+    @Override
+    public void showMobileToast() {
+        Toast.makeText(getContext().getApplicationContext(), getContext().getString(R.string.tips_play_mobile_data), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void hideMobileDataDialog() {
+        if (netDialog != null) {
+            netDialog.dismiss();
+        }
     }
 
     /************************ 定时处理的工具 ********************************/
