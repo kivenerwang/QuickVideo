@@ -34,7 +34,7 @@
         android:layout_height="@dimen/dimen_52dp"
         android:background="@drawable/dialog_btn_right"
         android:gravity="center"
-        android:text="@string/tips_not_wifi_cancel"
+        android:text="@string/tips_not_wifi_confirm"
         android:textColor="@color/A01"
         android:textSize="@dimen/F03"
         android:layout_toRightOf="@id/dialog_bottom_btn_divider"

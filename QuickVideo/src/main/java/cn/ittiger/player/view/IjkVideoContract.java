@@ -1,6 +1,6 @@
 package cn.ittiger.player.view;
 
-import android.app.Activity;
+import android.support.annotation.StringRes;
 import android.view.MotionEvent;
 
 /**
@@ -77,7 +77,7 @@ public interface IjkVideoContract {
 
         void showMobileDataDialog();
 
-        void showMobileToast();
+        void showToast(@StringRes int msg);
 
         void hideMobileDataDialog();
     }
@@ -98,7 +98,7 @@ public interface IjkVideoContract {
 
         void handleStopPlayMobileDataLogic();
 
-        void handleContinuePlayMobileDataLogic();
+        void handleContinuePlayMobileDataLogic(int playState);
     }
 
 

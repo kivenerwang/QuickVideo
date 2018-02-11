@@ -7,7 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/TigerVideo-TigerVideo.iml" filepath="$PROJECT_DIR$/app/TigerVideo-TigerVideo.iml" />
       <module fileurl="file://$PROJECT_DIR$/QuickVideo/TigerVideoPlayer.iml" filepath="$PROJECT_DIR$/QuickVideo/TigerVideoPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/commonutil/commonutil.iml" filepath="$PROJECT_DIR$/commonutil/commonutil.iml" />
+      <module fileurl="file://$PROJECT_DIR$/compats/commonutil.iml" filepath="$PROJECT_DIR$/compats/commonutil.iml" />
     </modules>
   </component>
 </project>

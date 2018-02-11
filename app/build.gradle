@@ -36,7 +36,7 @@ dependencies {
 
 //    compile 'cn.ittiger:TigerVideoPlayer:1.2'
     compile project(':QuickVideo')
-    compile project(':commonutil')
+    compile project(':compats')
     compile 'cn.ittiger:tigerdb:1.0'
 
     //butterknife

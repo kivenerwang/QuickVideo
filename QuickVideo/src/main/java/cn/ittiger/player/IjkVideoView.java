@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -30,8 +31,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.commonutil.KeyMsgEvent;
-import com.example.commonutil.NetMsgEvent;
+import com.quickplayer.bean.KeyMsgEvent;
+import com.quickplayer.bean.NetMsgEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -357,7 +358,7 @@ public class IjkVideoView extends FrameLayout implements
         if (id == R.id.btn_cancel) {
             mPresenter.handleStopPlayMobileDataLogic();
         } else if (id == R.id.btn_confirm) {
-            mPresenter.handleContinuePlayMobileDataLogic();
+            mPresenter.handleContinuePlayMobileDataLogic(mCurrentState);
         }
     }
 
@@ -924,11 +925,12 @@ public class IjkVideoView extends FrameLayout implements
         });
         netDialog.setNegativeButtonListener(this);
         netDialog.setPositiveButtonListener(this);
+        netDialog.show();
     }
 
     @Override
-    public void showMobileToast() {
-        Toast.makeText(getContext().getApplicationContext(), getContext().getString(R.string.tips_play_mobile_data), Toast.LENGTH_SHORT).show();
+    public void showToast(@StringRes int msg) {
+        Toast.makeText(getContext().getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override

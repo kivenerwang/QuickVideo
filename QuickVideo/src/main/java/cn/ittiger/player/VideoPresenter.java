@@ -3,7 +3,11 @@ package cn.ittiger.player;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
+
+import com.quickplayer.CompatApplication;
+import com.quickplayer.utils.NetworkUtils;
 
 import cn.ittiger.player.state.PlayState;
 import cn.ittiger.player.state.ScreenState;
@@ -45,6 +49,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     @Override
     public void handleNetChangeLogic(int netType) {
+        Log.i("dongdong","handle net  change =" + netType);
         if (PlayerManager.getInstance().isPlaying()) {
             if (netType ==  ConnectivityManager.TYPE_WIFI) {
 
@@ -59,19 +64,27 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     /**
      * 处理当前流量情况下的逻辑
      */
-    private void handleMobileDataLogic() {
-        if (isNeedShowWifiTip()) {
+    private boolean handleMobileDataLogic() {
+        boolean result;
+        if (CompatApplication.isNeedShowWifiTip()) {
             PlayerManager.getInstance().pause();
             mVideoView.showMobileDataDialog();
+            result = false;
         } else {
-            mVideoView.showMobileToast();
+            mVideoView.showToast(R.string.tips_play_mobile_data);
+            result = true;
         }
+        return result;
     }
 
     @Override
     public void handleVideoContainerLogic(int playState, boolean needHiden) {
         if (mLockState) {
             //屏幕锁住状态，不做任何处理。
+            return;
+        }
+
+        if (!isNetworkAvailable()) {
             return;
         }
         switch (playState) {
@@ -91,6 +104,23 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 handleViewState(false);
                 break;
         }
+    }
+
+    /**
+     * 判断当前网络状态是否可以播放的逻辑
+     * @return
+     */
+    private boolean isNetworkAvailable() {
+        boolean enable = true;
+        if (NetworkUtils.isNetworkAvailable()) {
+            if (NetworkUtils.isMobileConnected()) {
+                enable = handleMobileDataLogic();
+            }
+        } else {
+            mVideoView.showToast(R.string.net_error_text);
+            enable = false;
+        }
+        return enable;
     }
 
     @Override
@@ -114,6 +144,10 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         if(!PlayerManager.getInstance().isViewPlaying(mViewHash)) {
             //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
             PlayerManager.getInstance().stop();
+        }
+
+        if (!isNetworkAvailable()) {
+            return;
         }
 
         switch (state) {
@@ -293,24 +327,22 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleContinuePlayMobileDataLogic() {
-        setNeedShowWifiTip(false);
-        PlayerManager.getInstance().play();
+    public void handleContinuePlayMobileDataLogic(int playState) {
+        if (playState == PlayState.STATE_NORMAL) {
+            mVideoView.startPlayVideo();
+        } else if (playState == PlayState.STATE_PAUSE){
+            PlayerManager.getInstance().play();
+        }
+        CompatApplication.setNeedShowWifiTip(false);
+        mVideoView.hideMobileDataDialog();
+
     }
 
 
 
     @Override
     public void handleStopPlayMobileDataLogic() {
-        setNeedShowWifiTip(true);
+        CompatApplication.setNeedShowWifiTip(true);
         mVideoView.hideMobileDataDialog();
-    }
-
-    public boolean isNeedShowWifiTip() {
-        return mNeedShowWifiTip;
-    }
-
-    public void setNeedShowWifiTip(boolean mNeedShowWifiTip) {
-        this.mNeedShowWifiTip = mNeedShowWifiTip;
     }
 }

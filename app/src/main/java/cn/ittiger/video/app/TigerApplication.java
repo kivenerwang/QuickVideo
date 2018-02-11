@@ -24,7 +24,7 @@ public class TigerApplication extends Application implements IDbApplication {
     public void onCreate() {
 
         super.onCreate();
-
+        PlayerApplication.onCreate(this);
         CrashHandler.getInstance().init(getApplicationContext());
         ApplicationHelper.getInstance().init(this);
         ButterKnife.setDebug(true);

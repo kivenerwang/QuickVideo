@@ -1,7 +1,6 @@
 package cn.ittiger.video.activity;
 
-import com.example.commonutil.KeyMsgEvent;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.quickplayer.bean.KeyMsgEvent;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 

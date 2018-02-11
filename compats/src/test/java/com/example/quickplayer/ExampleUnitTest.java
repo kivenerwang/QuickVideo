@@ -1,4 +1,4 @@
-package com.example.commonutil;
+package com.example.quickplayer;
 
 import org.junit.Test;
 
