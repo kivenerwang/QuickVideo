@@ -134,6 +134,11 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     @Override
     public void handleScreenRotate(int screenType) {
+        if (mLockState) {
+            //锁屏状态
+            mVideoView.showToast(R.string.tips_screen_locked);
+            return;
+        }
         if (screenType == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             //当前小屏，需要且成全屏
             mVideoView.changeUIFullScreen();

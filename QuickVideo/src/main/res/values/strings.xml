@@ -126,6 +126,7 @@
     <string name="text_buffer">0%</string>
     <string name="tv_replay">重播</string>
     <string name="tips_play_mobile_data">正在使用流量播放</string>
+    <string name="tips_screen_locked">工具栏已锁定</string>
 
 
 </resources>
