@@ -209,13 +209,14 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     @Override
     public boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition) {
 
-        if (touchStateCheck(playState)){
+        if (!isTouchAvailable(playState)){
             return false;
         }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastPositonX = event.getX();
+                mVideoView.cancleDismissControlViewTimer();
                 break;
             case MotionEvent.ACTION_MOVE:
                 handleSeekBarMove(event, currentPosition);
@@ -232,21 +233,27 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         return false;
     }
 
-    private boolean touchStateCheck(int playState) {
+    /**
+     * 判断当前的触摸事件是否有效
+     * @param playState
+     * @return
+     */
+    private boolean isTouchAvailable(int playState) {
+        boolean available = true;
         //1.判断屏幕状态
         if (!ScreenState.isFullScreen(mScreenState)) {
             //非全屏状态返回
-            return false;
+            available =  false;
         }
         //2.判断锁屏状态
         if (mLockState) {
-            return false;
+            available =  false;
         }
         //3.判断播放状态
         if (playState != PlayState.STATE_PLAYING &&  playState != PlayState.STATE_PAUSE && playState != PlayState.STATE_PLAYING_BUFFERING_START) {
-            return false;
+            available =  false;
         }
-        return true;
+        return available;
     }
 
     private void handleSeekBarMove(MotionEvent event, int currentPosition) {
@@ -269,7 +276,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     @Override
     public boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight) {
-        if (touchStateCheck(playState)){
+        if (!isTouchAvailable(playState)){
             return false;
         }
         switch (event.getAction()) {
@@ -309,6 +316,10 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         return false;
     }
 
+    /**
+     * 处理音量变化的逻辑
+     * @param deltaY
+     */
     private void handlVolumeChangeLogic(float deltaY) {
         deltaY = -deltaY;
 
@@ -316,6 +327,12 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         mVideoView.changeMediaVolume(deltaY);
     }
 
+
+    /**
+     * 处理位置变化的逻辑操作
+     * @param deltaX
+     * @param screenWidth
+     */
     private void handlePositionMoveLogic(float deltaX, int screenWidth) {
         int seekPostition;
         int downPostion = PlayerManager.getInstance().getCurrentPosition();
