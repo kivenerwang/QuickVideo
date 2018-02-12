@@ -66,7 +66,7 @@ public class NetStatusView extends ImageView {
 
             if(info==null){
                 //setImageResource(R.drawable.data_error);
-                info = mNetMananger.getActiveNetworkInfo();
+                return;
             }else if(ConnectivityManager.TYPE_WIFI==info.getType()){
 
                 if (wifi > -50 && wifi < 0) {//最强

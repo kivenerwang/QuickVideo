@@ -197,8 +197,9 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
 
         @Override
         public void handleMessage(Message msg) {
-
-            super.handleMessage(msg);
+            if (reference == null || reference.get() == null) {
+                return;
+            }
             switch (msg.what) {
                 case MSG_RELEASE:
                     reference.get().releaseMedia();
@@ -207,6 +208,8 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
                     reference.get().prepareMedia();
                     break;
                 default:
+                    super.handleMessage(msg);
+                    break;
             }
         }
     }

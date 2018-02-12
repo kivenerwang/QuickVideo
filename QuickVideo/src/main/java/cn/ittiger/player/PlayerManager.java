@@ -316,7 +316,7 @@ public final class PlayerManager implements IPlayer.PlayCallback {
         return mTotalTime;
     }
 
-    class PlayStateObservable extends Observable {
+    static class PlayStateObservable extends Observable {
 
         private void setObservableChanged() {
 

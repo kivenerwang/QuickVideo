@@ -72,13 +72,9 @@ public class IjkVideoView extends FrameLayout implements
         Observer{
 
     @BindView(R2.id.surface_container)
-    protected ViewGroup mTextureViewContainer; //渲染控件父类
+    ViewGroup mTextureViewContainer; //渲染控件父类
 
     protected View mSmallClose; //小窗口关闭按键
-
-    protected Map<String, String> mMapHeadData = new HashMap<>();
-
-    protected TextureView mTextureView;
 
     @BindView(R2.id.btn_start)
     ImageView mStartButton;
@@ -99,25 +95,25 @@ public class IjkVideoView extends FrameLayout implements
     TextView mPopCurTimeView;
 
     @BindView(R2.id.tv_duration)
-    protected TextView mPopTotalTimeView;
+    TextView mPopTotalTimeView;
 
     @BindView(R2.id.video_pop_progress)
-    protected ProgressBar mPopPregressBar;
+    ProgressBar mPopPregressBar;
 
     @BindView(R2.id.bottom_seekbar)
-    protected SeekBar mBottomSeekBar;
+    SeekBar mBottomSeekBar;
 
     @BindView(R2.id.bottom_progressbar)
-    protected ProgressBar mBottomProgressBar;
+    ProgressBar mBottomProgressBar;
 
     @BindView(R2.id.btn_screen_rotate)
-    protected ImageView mFullscreenButton;
+    ImageView mFullscreenButton;
 
     @BindView(R2.id.bottom_tv_current)
-    protected TextView mBottomCurTimeView;
+    TextView mBottomCurTimeView;
 
     @BindView(R2.id.bottom_tv_total)
-    protected TextView mTotalTimeTextView;
+    TextView mTotalTimeTextView;
 
     @BindView(R2.id.loading)
     RelativeLayout mLoadingView;
@@ -132,40 +128,40 @@ public class IjkVideoView extends FrameLayout implements
     ImageView mVideoThumbView;
 
     @BindView(R2.id.system_status_view)
-    protected ViewGroup mTopStatusView;
+    ViewGroup mTopStatusView;
 
     @BindView(R2.id.data)
-    protected NetStatusView mWifiView;
+    NetStatusView mWifiView;
 
     @BindView(R2.id.battery)
-    protected BatteryView mBatteryView;
+    BatteryView mBatteryView;
 
     @BindView(R2.id.time)
-    protected DigitalClock mTimeView;
+    DigitalClock mTimeView;
 
     @BindView(R2.id.btn_back)
-    protected ImageView mBackButton;
+    ImageView mBackButton;
 
     @BindView(R2.id.net_error)
-    protected ViewGroup mNetView;
+    ViewGroup mNetView;
 
     @BindView(R2.id.net_error_again)
-    protected TextView mRetryBtn; // retry btn when net error.
+    TextView mRetryBtn; // retry btn when net error.
 
     @BindView(R2.id.video_replay_view)
-    protected ViewGroup mReplayView;
+    ViewGroup mReplayView;
 
     @BindView(R2.id.video_tv_replay)
-    protected TextView mReplayBtn;
+    TextView mReplayBtn;
 
     @BindView(R2.id.btn_lock)
-    protected ImageView mLockBtn;
+    ImageView mLockBtn;
 
     @BindView(R2.id.video_cover_img)
-    protected ImageView mCoverView; // video cover img.
+    ImageView mCoverView; // video cover img.
 
     @BindView(R2.id.tv_title)
-    protected TextView mTitleTextView; //title
+    TextView mTitleTextView; //title
 
     @BindView(R2.id.player_buffer)
     TextView mBufferTextView; // 网络缓冲速度
@@ -316,7 +312,7 @@ public class IjkVideoView extends FrameLayout implements
     private void initData(Context context) {
         mViewHash = this.toString().hashCode();
         mSmallWindowWidth = mScreenWidth / 2;
-        mSmallWindowHeight = (int) (mSmallWindowWidth * 1.0f / 16 * 9 + 0.5f);
+        mSmallWindowHeight = (int) (mSmallWindowWidth * 1.0f / (double)16 * 9 + 0.5f);
         mHandler = new ProgressHandler(this);
         mBottomSeekBar.setOnSeekBarChangeListener(this);
     }

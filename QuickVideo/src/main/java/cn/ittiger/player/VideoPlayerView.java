@@ -1339,6 +1339,8 @@ public class VideoPlayerView extends RelativeLayout implements
                 }
                 mIsTouchControllerView = false;
                 break;
+            default:
+                break;
         }
 
         switch (event.getAction()) {

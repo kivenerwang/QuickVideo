@@ -32,6 +32,14 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     protected int THRES_HOLD = 80; //手势偏差值
 
+    public boolean isLastTouchFinish() {
+        return isLastTouchFinish;
+    }
+
+    public void setLastTouchFinish(boolean lastTouchFinish) {
+        isLastTouchFinish = lastTouchFinish;
+    }
+
     private boolean isLastTouchFinish = false;
 
     private boolean mNeedShowWifiTip = true;
@@ -204,10 +212,10 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             mLastPositonX = event.getX();
             mLastPositonY = event.getY();
-            isLastTouchFinish = true;
+            setLastTouchFinish(true);
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             //首先判断触摸事件的类型是横向滑动还是纵向滑动
-            if (isLastTouchFinish) {
+            if (isLastTouchFinish()) {
                 touchType = getTouchType(event, screenWidth);
             }
             if (touchType == TOUCH_TYPE_HORIZONTAL) {
@@ -230,7 +238,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             mVideoView.cancleDismissControlViewTimer();
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             mVideoView.startDismissControlViewTimer();
-            isLastTouchFinish = true;
+            setLastTouchFinish(true);
         }
         return false;
     }
@@ -282,20 +290,20 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         float absDelteY = Math.abs(delteY);
         if (absDelteX > THRES_HOLD) {
             //横向滑动
-            isLastTouchFinish = false;
+            setLastTouchFinish(false);
             return TOUCH_TYPE_HORIZONTAL;
         } else if (absDelteY > THRES_HOLD) {
             // 纵向滑动
             if (isLastTouchFinish) {
                 if (mLastPositonX < screenWidth * 0.5) {
                     type =  TOUCH_TYPE_VERTICAL_LEFT;
-                    isLastTouchFinish = false;
+                    setLastTouchFinish(false);
                     return type;
                 }
             }
             if (type != TOUCH_TYPE_VERTICAL_LEFT) {
                 type = TOUCH_TYPE_VERTICAL_RIGHT;
-                isLastTouchFinish = false;
+                setLastTouchFinish(false);
                 return type;
             }
         }
