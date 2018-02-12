@@ -118,9 +118,6 @@ public class IjkVideoView extends FrameLayout implements
     @BindView(R2.id.loading)
     RelativeLayout mLoadingView;
 
-    @BindView(R2.id.layout_top)
-    ViewGroup mTopContainer;
-
     @BindView(R2.id.layout_bottom)
     ViewGroup mBottomContainer;
 
@@ -157,9 +154,6 @@ public class IjkVideoView extends FrameLayout implements
     @BindView(R2.id.btn_lock)
     ImageView mLockBtn;
 
-    @BindView(R2.id.video_cover_img)
-    ImageView mCoverView; // video cover img.
-
     @BindView(R2.id.tv_title)
     TextView mTitleTextView; //title
 
@@ -167,10 +161,6 @@ public class IjkVideoView extends FrameLayout implements
     TextView mBufferTextView; // 网络缓冲速度
 
     private CustomDialog netDialog;
-
-    protected Bitmap mFullPauseBitmap = null;//暂停时的全屏图片；
-
-    protected float mBrightnessData;
     /**
      * 视频时长，miliseconds
      */

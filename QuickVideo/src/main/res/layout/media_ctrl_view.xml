@@ -71,9 +71,4 @@
     <include
         android:id="@+id/video_replay_view"
         layout="@layout/ctrl_replay_view"/>
-
-    <ImageView
-        android:id="@+id/video_cover_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 </FrameLayout>

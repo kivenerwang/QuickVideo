@@ -42,8 +42,6 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     private boolean isLastTouchFinish = false;
 
-    private boolean mNeedShowWifiTip = true;
-
     private static final int TOUCH_TYPE_HORIZONTAL = 1;
     //竖向触摸屏幕左边
     private static final int TOUCH_TYPE_VERTICAL_LEFT = 2;
