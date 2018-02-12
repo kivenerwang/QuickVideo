@@ -96,7 +96,6 @@
     <string name="player_prompt_notwifi_downloadcore">当前处于移动数据网络，确定继续播放?</string>
     <string name="player_prompt_notwifi_playvideo">当前处于移动数据网络，继续播放将产生手机流量</string>
     <string name="news_video_play_mobile_tips">正在使用流量播放，将产生流量费用</string>
-    <string name="locked_tip">工具栏已锁定</string>
     <string name="news_video_play_mobile_tips_title">流量提醒</string>
     <string name="player_prompt_netunable_playvideo">网络不可用，去设置</string>
     <string name="player_prompt_downloadcore_fail">视频插件初始化失败，是否继续下载?</string>

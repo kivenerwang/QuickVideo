@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Handler;
@@ -37,8 +36,6 @@ import com.quickplayer.bean.NetMsgEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -354,7 +351,7 @@ public class IjkVideoView extends FrameLayout implements
             //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
             PlayerManager.getInstance().stop();
         }
-        mPresenter.handleVideoContainerLogic(mCurrentState, mBottomContainer.getVisibility() ==VISIBLE);
+        mPresenter.handleClickContainerLogic(mCurrentState, mBottomContainer.getVisibility() ==VISIBLE);
     }
 
 
@@ -389,6 +386,13 @@ public class IjkVideoView extends FrameLayout implements
 
         return mPresenter.handleContainerTouchLogic(mCurrentState, event, mScreenWidth, mScreenHight);
     }
+
+    @OnTouch(R2.id.bottom_seekbar)
+    boolean onTouchBottomSeekBar(MotionEvent event) {
+        int currentPosition = mBottomSeekBar.getProgress();
+        return mPresenter.handleBottomSeekBarTouchLogic(mCurrentState, event, currentPosition);
+    }
+
 
 
     @Override
@@ -643,9 +647,8 @@ public class IjkVideoView extends FrameLayout implements
 
         Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mLoadingView);
-
-        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_CONTROLLER_VIEW, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
-        mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
+        Activity activity = (Activity) getContext();
+        mPresenter.handleHideView(activity.getRequestedOrientation());
     }
 
     @Override
@@ -666,11 +669,6 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mTitleTextView);
         Utils.showViewIfNeed(mStartButton);
         Utils.showViewIfNeed(mBottomContainer);
-        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
-        android.os.Message msg = new android.os.Message();
-        msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
-        msg.arg1 = ScreenState.SCREEN_STATE_NORMAL;
-        mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
     }
 
     @Override
@@ -696,11 +694,6 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mStartButton);
         Utils.showViewIfNeed(mBottomContainer);
         Utils.showViewIfNeed(mLockBtn);
-        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
-        android.os.Message msg = new android.os.Message();
-        msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
-        msg.arg1 = ScreenState.SCREEN_STATE_FULLSCREEN;
-        mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
     }
 
     @Override
@@ -793,6 +786,13 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mBottomContainer);
         Utils.showViewIfNeed(mBackButton);
     }
+
+    @Override
+    public void updateCurPlayTime(String strSeekTime) {
+        mBottomCurTimeView.setText(strSeekTime);
+    }
+
+    /************************ 全屏弹窗显示快进，快退，音量，屏幕亮度 ********************************/
 
     @Override
     public void showPositionLiftAnimation(String seekTime, String totalTime) {
@@ -937,7 +937,9 @@ public class IjkVideoView extends FrameLayout implements
         }
     }
 
+
     /************************ 定时处理的工具 ********************************/
+
 
     /**
      * reset buffer view text to zero.
@@ -947,7 +949,6 @@ public class IjkVideoView extends FrameLayout implements
             mBufferTextView.setText(getResources().getString(R.string.text_buffer));
         }
     }
-
 
     /**
      * 更新loading速度
@@ -1025,6 +1026,18 @@ public class IjkVideoView extends FrameLayout implements
             mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
         }
     }
+
+    @Override
+    public void startDismissNormalViewTime() {
+        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
+        android.os.Message msg = new android.os.Message();
+        msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
+        msg.arg1 = ScreenState.SCREEN_STATE_NORMAL;
+        mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+    }
+
+    /************************ 播放器交互 ********************************/
+
 
     /**
      * 开始播放视频

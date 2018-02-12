@@ -85,7 +85,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleVideoContainerLogic(int playState, boolean needHiden) {
+    public void handleClickContainerLogic(int playState, boolean needHiden) {
         if (mLockState) {
             //屏幕锁住状态，不做任何处理。
             return;
@@ -112,6 +112,15 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void handleHideView(int requestedOrientation) {
+        if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            mVideoView.startDismissControlViewTimer();
+        } else {
+            mVideoView.startDismissNormalViewTime();
         }
     }
 
@@ -196,8 +205,34 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         mLockState = !mLockState;
     }
 
+
     @Override
-    public boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight) {
+    public boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition) {
+
+        if (touchStateCheck(playState)){
+            return false;
+        }
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mLastPositonX = event.getX();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                handleSeekBarMove(event, currentPosition);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                mVideoView.hidePopView();
+                mVideoView.startDismissControlViewTimer();
+                break;
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    private boolean touchStateCheck(int playState) {
         //1.判断屏幕状态
         if (!ScreenState.isFullScreen(mScreenState)) {
             //非全屏状态返回
@@ -211,7 +246,32 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         if (playState != PlayState.STATE_PLAYING &&  playState != PlayState.STATE_PAUSE && playState != PlayState.STATE_PLAYING_BUFFERING_START) {
             return false;
         }
+        return true;
+    }
 
+    private void handleSeekBarMove(MotionEvent event, int currentPosition) {
+        int totalTime = PlayerManager.getInstance().getTotalTime();
+        float deltaX = event.getX() - mLastPositonX;
+        int seekTimePosition = (currentPosition * totalTime / 100);
+
+        if (seekTimePosition > totalTime) {
+            seekTimePosition = totalTime;
+        }
+        String strSeekTime = Utils.stringForTime(seekTimePosition);
+        String strTotalTime = Utils.stringForTime(totalTime);
+        if (deltaX > 0) {
+            mVideoView.showPositionRightAnimation(strSeekTime,strTotalTime);
+        } else {
+            mVideoView.showPositionLiftAnimation(strSeekTime, strTotalTime);
+        }
+        mVideoView.updateCurPlayTime(strSeekTime);
+    }
+
+    @Override
+    public boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight) {
+        if (touchStateCheck(playState)){
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mLastPositonX = event.getX();
@@ -331,6 +391,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 mVideoView.hideViewInFullScreenState();
             } else {
                 mVideoView.showViewInFullScreenState();
+                mVideoView.startDismissNormalViewTime();
             }
 
         } else {
@@ -339,6 +400,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 mVideoView.hidenAllView();
             } else {
                 mVideoView.showAllView();
+                mVideoView.startDismissNormalViewTime();
             }
         }
 

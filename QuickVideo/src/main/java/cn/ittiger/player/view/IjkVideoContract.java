@@ -80,11 +80,15 @@ public interface IjkVideoContract {
         void showToast(@StringRes int msg);
 
         void hideMobileDataDialog();
+
+        void startDismissNormalViewTime();
+
+        void updateCurPlayTime(String strSeekTime);
     }
 
     interface IVideoPresenter {
         //处理视频container点击逻辑
-        void handleVideoContainerLogic(int playState, boolean needHiden);
+        void handleClickContainerLogic(int playState, boolean needHiden);
         //处理屏幕选择
         void handleScreenRotate(int screenType);
 
@@ -99,6 +103,10 @@ public interface IjkVideoContract {
         void handleStopPlayMobileDataLogic();
 
         void handleContinuePlayMobileDataLogic(int playState);
+
+        void handleHideView(int requestedOrientation);
+
+        boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition);
     }
 
 
