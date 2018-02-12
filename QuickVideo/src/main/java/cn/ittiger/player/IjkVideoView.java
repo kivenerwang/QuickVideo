@@ -612,7 +612,7 @@ public class IjkVideoView extends FrameLayout implements
         //progressbar 隐藏
         mBottomProgressBar.setVisibility(View.INVISIBLE);
         //开始按钮显示
-        mStartButton.setVisibility(View.VISIBLE);
+        Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_start);
     }
 
@@ -625,7 +625,7 @@ public class IjkVideoView extends FrameLayout implements
         //loading 布局隐藏
         mLoadingView.setVisibility(View.INVISIBLE);
         //开始按钮显示
-        mStartButton.setVisibility(View.VISIBLE);
+        Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_start);
         //底部控制布局显示
         mBottomContainer.setVisibility(View.VISIBLE);
@@ -941,7 +941,7 @@ public class IjkVideoView extends FrameLayout implements
     /**
      * reset buffer view text to zero.
      */
-    public void resetBufferProcess() {
+    protected void resetBufferProcess() {
         if (mBufferTextView != null) {
             mBufferTextView.setText(getResources().getString(R.string.text_buffer));
         }
@@ -951,7 +951,7 @@ public class IjkVideoView extends FrameLayout implements
     /**
      * 更新loading速度
      */
-    public void updateLoadingProgress(android.os.Message msg) {
+    protected void updateLoadingProgress(android.os.Message msg) {
 
         //TODO 根据IjkPlayer 获取
         int bufferCount = msg.arg1;
@@ -966,7 +966,7 @@ public class IjkVideoView extends FrameLayout implements
     /**
      * 更新底部控制布局中的seekbar
      */
-    public void updateBottomProgress() {
+    protected void updateBottomProgress() {
         int position = PlayerManager.getInstance().getCurrentPosition();
         int totalTime = mDuration;
         int progress = position * 100 / (totalTime == 0 ? 1 : totalTime);

@@ -30,7 +30,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     private float mLastPositonY; //上次触摸的位置
 
-    protected int THRES_HOLD = 80; //手势偏差值
+    private int THRES_HOLD = 80; //手势偏差值
+    private int touchType = -1;
 
     public boolean isLastTouchFinish() {
         return isLastTouchFinish;
@@ -205,39 +206,41 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         if (playState != PlayState.STATE_PLAYING &&  playState != PlayState.STATE_PAUSE && playState != PlayState.STATE_PLAYING_BUFFERING_START) {
             return false;
         }
-        int touchType = -1;
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mLastPositonX = event.getX();
-            mLastPositonY = event.getY();
-            setLastTouchFinish(true);
-        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            //首先判断触摸事件的类型是横向滑动还是纵向滑动
-            if (isLastTouchFinish()) {
-                touchType = getTouchType(event, screenWidth);
-            }
-            if (touchType == TOUCH_TYPE_HORIZONTAL) {
-                float deltaX = event.getX() - mLastPositonX;
-                handlePositionMoveLogic(deltaX, screenWidth);
-            } else if (touchType ==  TOUCH_TYPE_VERTICAL_RIGHT) {
-                float deltaY = event.getY() - mLastPositonY;
-                handlVolumeChangeLogic(deltaY);
-            } else if (touchType == TOUCH_TYPE_VERTICAL_LEFT) {
-                float deltaY = event.getY() - mLastPositonY;
-                deltaY = (-deltaY / screenHight);
-                mVideoView.changeScreenBrightness(deltaY);
-                mVideoView.showBrightnessAnimation();
-            }
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-            mVideoView.hidePopView();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mLastPositonX = event.getX();
+                mLastPositonY = event.getY();
+                setLastTouchFinish(true);
+                mVideoView.cancleDismissControlViewTimer();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (isLastTouchFinish()) {
+                    touchType = getTouchType(event, screenWidth);
+                }
+                if (touchType == TOUCH_TYPE_HORIZONTAL) {
+                    float deltaX = event.getX() - mLastPositonX;
+                    handlePositionMoveLogic(deltaX, screenWidth);
+                } else if (touchType ==  TOUCH_TYPE_VERTICAL_RIGHT) {
+                    float deltaY = event.getY() - mLastPositonY;
+                    handlVolumeChangeLogic(deltaY);
+                } else if (touchType == TOUCH_TYPE_VERTICAL_LEFT) {
+                    float deltaY = event.getY() - mLastPositonY;
+                    deltaY = (-deltaY / screenHight);
+                    mVideoView.changeScreenBrightness(deltaY);
+                    mVideoView.showBrightnessAnimation();
+                }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                mVideoView.hidePopView();
+                mVideoView.startDismissControlViewTimer();
+                setLastTouchFinish(true);
+                break;
+            default:
+                break;
         }
-        //最后计时器再次处理
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mVideoView.cancleDismissControlViewTimer();
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-            mVideoView.startDismissControlViewTimer();
-            setLastTouchFinish(true);
-        }
+
         return false;
     }
 
@@ -267,6 +270,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         }
         String seekTime = Utils.stringForTime(seekPostition);
         String totalTime = Utils.stringForTime(videoTime);
+        PlayerManager.getInstance().seekTo(seekPostition);
         if (deltaX > 0) {
             //向右移动
             mVideoView.showPositionRightAnimation(seekTime, totalTime);
