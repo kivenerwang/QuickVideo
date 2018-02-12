@@ -576,7 +576,17 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUINetError() {
-
+        Utils.showViewIfNeed(mNetView);
+        Utils.hideViewIfNeed(mLoadingView);
+        Utils.hideViewIfNeed(mStartButton);
+        Utils.hideViewIfNeed(mBottomContainer);
+        Utils.hideViewIfNeed(mLockBtn);
+        Utils.hideViewIfNeed(mTitleTextView);
+        Utils.hideViewIfNeed(mBackButton);
+        Utils.hideViewIfNeed(mWifiView);
+        Utils.hideViewIfNeed(mBatteryView);
+        Utils.hideViewIfNeed(mTimeView);
+        cancleDismissControlViewTimer();
     }
 
     @Override

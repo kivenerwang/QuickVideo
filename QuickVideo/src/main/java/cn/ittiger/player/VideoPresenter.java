@@ -90,11 +90,11 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             return;
         }
 
-        if (!isNetworkAvailable()) {
-            return;
-        }
         switch (playState) {
             case PlayState.STATE_NORMAL:
+                if (!isNetworkAvailable()) {
+                    return;
+                }
                 mVideoView.startPlayVideo();
                 break;
             case PlayState.STATE_AUTO_COMPLETE:

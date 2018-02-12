@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
 
@@ -158,6 +159,10 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
 
     @Override
     public boolean onError(IMediaPlayer mp, int what, int extra) {
+        Log.i("dongdong", "ijk player OnError what=" + what + ", extra=" + extra);
+        if (mPlayCallback != null) {
+            mPlayCallback.onError("Play error, what=" + what + ", extra=" + extra);
+        }
         return false;
     }
 

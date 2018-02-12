@@ -15,6 +15,7 @@ import cn.ittiger.player.state.ScreenState;
 import cn.ittiger.player.util.Utils;
 
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.quickplayer.utils.NetworkUtils;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -261,7 +262,12 @@ public final class PlayerManager implements IPlayer.PlayCallback {
             Log.d(TAG, error);
         }
         mPlayer.stop();
-        changeUIState(PlayState.STATE_ERROR);
+        if (NetworkUtils.isNetworkAvailable()) {
+            changeUIState(PlayState.STATE_ERROR);
+        } else {
+            changeUIState(PlayState.STATE_NET_ERROR);
+        }
+
     }
 
     @Override
