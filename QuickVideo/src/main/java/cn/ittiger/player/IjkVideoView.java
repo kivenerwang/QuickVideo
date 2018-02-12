@@ -798,8 +798,8 @@ public class IjkVideoView extends FrameLayout implements
     public void showPositionLiftAnimation(String seekTime, String totalTime) {
         Utils.showViewIfNeed(mPopView);
         Utils.showViewIfNeed(mPopIconView);
+        Utils.showViewIfNeed(mPopContentView);
         Utils.showViewIfNeed(mPopTimeCtrlView);
-        Utils.showViewIfNeed(mPopPregressBar);
         Utils.showViewIfNeed(mPopCurTimeView);
         Utils.showViewIfNeed(mPopTotalTimeView);
 
@@ -816,6 +816,7 @@ public class IjkVideoView extends FrameLayout implements
     public void showPositionRightAnimation(String seekTime, String totalTime) {
         Utils.showViewIfNeed(mPopView);
         Utils.showViewIfNeed(mPopIconView);
+        Utils.showViewIfNeed(mPopContentView);
         Utils.showViewIfNeed(mPopTimeCtrlView);
         Utils.showViewIfNeed(mPopCurTimeView);
         Utils.showViewIfNeed(mPopTotalTimeView);
@@ -896,12 +897,12 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     public void hidePopView() {
         Utils.hideViewIfNeed(mPopView);
-        Utils.hideViewIfNeed(mPopTimeCtrlView);
         Utils.hideViewIfNeed(mPopPregressBar);
         Utils.hideViewIfNeed(mPopIconView);
         Utils.hideViewIfNeed(mPopContentView);
         Utils.hideViewIfNeed(mPopCurTimeView);
         Utils.hideViewIfNeed(mPopTotalTimeView);
+        Utils.hideViewIfNeed(mPopTimeCtrlView);
     }
 
     @Override
