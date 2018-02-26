@@ -13,7 +13,7 @@ public final class ScreenState {
     /**
      * 全屏播放状态
      */
-    public static final int SCREEN_STATE_FULLSCREEN = 2;
+    public static final int SCREEN_STATE_FULLSCREEN = 0;
     /**
      * 小窗口播放状态
      */

@@ -88,7 +88,7 @@ public interface IjkVideoContract {
 
     interface IVideoPresenter {
         //处理视频container点击逻辑
-        void handleClickContainerLogic(int playState, boolean needHiden);
+        void handleClickContainerLogic(int playState, int screenState, boolean needHiden);
         //处理屏幕选择
         void handleScreenRotate(int screenType);
 
@@ -96,7 +96,7 @@ public interface IjkVideoContract {
 
         void handleLockLogic();
 
-        boolean handleContainerTouchLogic(int playState, MotionEvent event, int width, int screenWidth);
+        boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight, int screenType);
 
         void handleNetChangeLogic(int netType);
 
@@ -106,7 +106,7 @@ public interface IjkVideoContract {
 
         void handleHideView(int requestedOrientation);
 
-        boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition);
+        boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition, int position);
     }
 
 

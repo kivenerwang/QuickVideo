@@ -24,8 +24,6 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     private boolean mLockState; //锁屏状态
 
-    private int mScreenState; //屏幕横竖屏状态
-
     private float mLastPositonX; //上次触摸的位置
 
     private float mLastPositonY; //上次触摸的位置
@@ -85,7 +83,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleClickContainerLogic(int playState, boolean needHiden) {
+    public void handleClickContainerLogic(int playState, int screenState, boolean needHiden) {
         if (mLockState) {
             //屏幕锁住状态，不做任何处理。
             return;
@@ -104,11 +102,11 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 //网络错误
                 break;
             case PlayState.STATE_PLAYING:
-                handleViewState(needHiden);
+                handleViewState(needHiden, screenState);
                 break;
             case PlayState.STATE_PAUSE:
                 //当前暂停状态，需要显示startbtn
-                handleViewState(false);
+                handleViewState(false, screenState);
                 break;
             default:
                 break;
@@ -151,11 +149,9 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         if (screenType == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             //当前小屏，需要且成全屏
             mVideoView.changeUIFullScreen();
-            mScreenState = ScreenState.SCREEN_STATE_FULLSCREEN;
         } else {
             //当前屏幕是全屏，需要切出正常屏幕
             mVideoView.changeUINormalScreen();
-            mScreenState = ScreenState.SCREEN_STATE_NORMAL;
         }
     }
 
@@ -207,9 +203,9 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
 
     @Override
-    public boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition) {
+    public boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition, int screenType) {
 
-        if (!isTouchAvailable(playState)){
+        if (!isTouchAvailable(playState, screenType)){
             return false;
         }
 
@@ -238,10 +234,10 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
      * @param playState
      * @return
      */
-    private boolean isTouchAvailable(int playState) {
+    private boolean isTouchAvailable(int playState, int screenState) {
         boolean available = true;
         //1.判断屏幕状态
-        if (!ScreenState.isFullScreen(mScreenState)) {
+        if (!ScreenState.isFullScreen(screenState)) {
             //非全屏状态返回
             available =  false;
         }
@@ -275,8 +271,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight) {
-        if (!isTouchAvailable(playState)){
+    public boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight, int screenType) {
+        if (!isTouchAvailable(playState, screenType)){
             return false;
         }
         switch (event.getAction()) {
@@ -398,10 +394,11 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     /**
      * 处理播放
      * @param needHiden
+     * @param screenState
      */
-    private void handleViewState(boolean needHiden) {
+    private void handleViewState(boolean needHiden, int screenState) {
 
-        if (ScreenState.isFullScreen(mScreenState)) {
+        if (ScreenState.isFullScreen(screenState)) {
             //全屏操作操作
             if (needHiden) {
                 //隐藏全屏状态下的UI控件

@@ -351,7 +351,9 @@ public class IjkVideoView extends FrameLayout implements
             //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
             PlayerManager.getInstance().stop();
         }
-        mPresenter.handleClickContainerLogic(mCurrentState, mBottomContainer.getVisibility() ==VISIBLE);
+        Activity activity = (Activity) getContext();
+        int screenState = activity.getRequestedOrientation();
+        mPresenter.handleClickContainerLogic(mCurrentState, screenState, mBottomContainer.getVisibility() ==VISIBLE);
     }
 
 
@@ -381,16 +383,19 @@ public class IjkVideoView extends FrameLayout implements
 
     @OnTouch(R2.id.surface_container)
     boolean onTouchContainer(MotionEvent event) {
+        Activity activity = (Activity) getContext();
         mScreenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
         mScreenHight = getContext().getResources().getDisplayMetrics().heightPixels;
-
-        return mPresenter.handleContainerTouchLogic(mCurrentState, event, mScreenWidth, mScreenHight);
+        int screenType = activity.getRequestedOrientation();
+        return mPresenter.handleContainerTouchLogic(mCurrentState, event, mScreenWidth, mScreenHight, screenType);
     }
 
     @OnTouch(R2.id.bottom_seekbar)
     boolean onTouchBottomSeekBar(MotionEvent event) {
         int currentPosition = mBottomSeekBar.getProgress();
-        return mPresenter.handleBottomSeekBarTouchLogic(mCurrentState, event, currentPosition);
+        Activity activity = (Activity) getContext();
+        int screenType = activity.getRequestedOrientation();
+        return mPresenter.handleBottomSeekBarTouchLogic(mCurrentState, event, currentPosition, screenType);
     }
 
 
@@ -610,7 +615,7 @@ public class IjkVideoView extends FrameLayout implements
         //loading 布局隐藏
         mLoadingView.setVisibility(View.INVISIBLE);
         //锁屏按钮隐藏
-        mLockBtn.setVisibility(GONE);
+        Utils.hideViewIfNeed(mLockBtn);
         //重播按钮隐藏
         mReplayView.setVisibility(GONE);
         //progressbar 隐藏
