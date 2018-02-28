@@ -476,7 +476,7 @@ public class IjkVideoView extends FrameLayout implements
         mDuration = duration;
         String totalTime = Utils.stringForTime(duration);
         mTotalTimeTextView.setText(totalTime);
-        mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
+        startUpdateBottomPlayInfo();
     }
 
     private void onPlayStateChanged(int state) {
@@ -655,14 +655,14 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void hidenAllView() {
+    public void hidenNormalScreenView() {
         Utils.hideViewIfNeed(mTitleTextView);
         Utils.hideViewIfNeed(mStartButton);
         Utils.hideViewIfNeed(mBottomContainer);
     }
 
     @Override
-    public void showAllView() {
+    public void showNormalScreenView() {
         Utils.showViewIfNeed(mTitleTextView);
         Utils.showViewIfNeed(mStartButton);
         Utils.showViewIfNeed(mBottomContainer);
@@ -753,7 +753,7 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void changeUIErrorToast() {
+    public void showErrorToast() {
         Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT)
                 .show();
     }
@@ -806,6 +806,11 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     public void changeUIBackBtnShow() {
         Utils.showViewIfNeed(mBackButton);
+    }
+
+    @Override
+    public void startUpdateBottomPlayInfo() {
+        mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
     }
 
     protected void initPauseCover() {
@@ -924,7 +929,7 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void hidePopView() {
+    public void hideAnimationView() {
         Utils.hideViewIfNeed(mPopView);
         Utils.hideViewIfNeed(mPopPregressBar);
         Utils.hideViewIfNeed(mPopIconView);
@@ -1017,7 +1022,7 @@ public class IjkVideoView extends FrameLayout implements
         }
 
         if (!mHandler.hasMessages (ProgressHandler.UPDATE_BOTTOM_PROGRESS) && (PlayerManager.getInstance().isPlaying() || mCurrentState == PlayState.STATE_PLAYING)) {
-            mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_BOTTOM_PROGRESS, 500);
+            startUpdateBottomPlayInfo();
         }
     }
 
@@ -1032,7 +1037,7 @@ public class IjkVideoView extends FrameLayout implements
             if (msg.arg1 ==ScreenState.SCREEN_STATE_FULLSCREEN) {
                 hideViewInFullScreenState();
             } else if (msg.arg1 == ScreenState.SCREEN_STATE_NORMAL) {
-                hidenAllView();
+                hidenNormalScreenView();
             }
         }
 

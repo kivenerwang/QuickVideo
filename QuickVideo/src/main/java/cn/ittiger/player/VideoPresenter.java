@@ -166,7 +166,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     @Override
     public void handleStartLogic(int mViewHash, String mVideoUrl, int state) {
         if (TextUtils.isEmpty(mVideoUrl)) {
-            mVideoView.changeUIErrorToast();
+            mVideoView.showErrorToast();
         }
         if(!PlayerManager.getInstance().isViewPlaying(mViewHash)) {
             //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
@@ -191,6 +191,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             case PlayState.STATE_AUTO_COMPLETE:
                 PlayerManager.getInstance().seekTo(0);
                 PlayerManager.getInstance().play();
+                mVideoView.startUpdateBottomPlayInfo();
                 break;
             default:
                 break;
@@ -227,7 +228,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                mVideoView.hidePopView();
+                mVideoView.hideAnimationView();
                 mVideoView.startDismissFullScreenViewTimer();
                 break;
             default:
@@ -350,7 +351,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                mVideoView.hidePopView();
+                mVideoView.hideAnimationView();
                 mVideoView.startDismissFullScreenViewTimer();
                 setLastTouchFinish(true);
                 break;
@@ -460,9 +461,9 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         } else {
             //正常屏幕操作
             if (needHiden) {
-                mVideoView.hidenAllView();
+                mVideoView.hidenNormalScreenView();
             } else {
-                mVideoView.showAllView();
+                mVideoView.showNormalScreenView();
                 mVideoView.startDismissNormalViewTime();
             }
         }
