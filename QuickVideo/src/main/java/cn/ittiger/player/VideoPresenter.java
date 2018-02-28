@@ -283,7 +283,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     @Override
     public void handleViewChange(int playState) {
-        if (playState == PlayState.STATE_PAUSE || playState == PlayState.STATE_PLAYING_BUFFERING_START) {
+        if (playState == PlayState.STATE_PAUSE) {
             mVideoView.showScreenShots();
         }
     }

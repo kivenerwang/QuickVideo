@@ -476,7 +476,6 @@ public class IjkVideoView extends FrameLayout implements
             ((Activity)getContext()).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
                     mPresenter.handleViewChange(mCurrentState);
                 }
             });
