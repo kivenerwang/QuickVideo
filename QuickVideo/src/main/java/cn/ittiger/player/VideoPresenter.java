@@ -88,7 +88,6 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             //屏幕锁住状态，不做任何处理。
             return;
         }
-
         switch (playState) {
             case PlayState.STATE_NORMAL:
                 if (!isNetworkAvailable()) {
@@ -107,6 +106,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             case PlayState.STATE_PAUSE:
                 //当前暂停状态，需要显示startbtn
                 handleViewState(false, screenState);
+                PlayerManager.getInstance().play();
                 break;
             default:
                 break;
@@ -114,9 +114,9 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleHideView(int requestedOrientation) {
+    public void handleAutoHideView(int requestedOrientation) {
         if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            mVideoView.startDismissControlViewTimer();
+            mVideoView.startDismissFullScreenViewTimer();
         } else {
             mVideoView.startDismissNormalViewTime();
         }
@@ -140,15 +140,23 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleScreenRotate(int screenType) {
+    public void handleScreenRotate(int screenType, int playState) {
         if (mLockState) {
             //锁屏状态
             mVideoView.showToast(R.string.tips_screen_locked);
             return;
         }
-        if (screenType == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+        mVideoView.cancleDismissControlViewTimer();
+        //判断的播放状态，是否需要截屏
+        if ((playState == PlayState.STATE_PAUSE
+                || playState == PlayState.STATE_PLAYING_BUFFERING_START)) {
+            mVideoView.showCoverView();
+        }
+
+        if (ScreenState.isNormal(screenType)) {
             //当前小屏，需要且成全屏
             mVideoView.changeUIFullScreen();
+            mVideoView.startDismissFullScreenViewTimer();
         } else {
             //当前屏幕是全屏，需要切出正常屏幕
             mVideoView.changeUINormalScreen();
@@ -192,8 +200,8 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     @Override
     public void handleLockLogic() {
         if (mLockState) {
-            mVideoView.changeuiUnLock();
-            mVideoView.startDismissControlViewTimer();
+            mVideoView.changeUIUnLock();
+            mVideoView.startDismissFullScreenViewTimer();
         } else {
             mVideoView.changeUILock();
             mVideoView.cancleDismissControlViewTimer();
@@ -220,13 +228,54 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 mVideoView.hidePopView();
-                mVideoView.startDismissControlViewTimer();
+                mVideoView.startDismissFullScreenViewTimer();
                 break;
             default:
                 break;
         }
 
         return false;
+    }
+
+    @Override
+    public void handleChangeUIState(int screenType, int playState, boolean hasFocus) {
+        if (playState != PlayState.STATE_NORMAL && !hasFocus) {
+            mVideoView.changeUIShowCover();
+        } else {
+            switch (playState) {
+                case PlayState.STATE_NORMAL:
+                    mVideoView.changeUINormal();
+                    break;
+                case PlayState.STATE_LOADING:
+                    mVideoView.changeUILoading();
+                    break;
+                case PlayState.STATE_PLAYING:
+                    mVideoView.changeUIPlay();
+                    break;
+                case PlayState.STATE_PAUSE:
+                    mVideoView.changeUIPause();
+                    break;
+                case PlayState.STATE_PLAYING_BUFFERING_START:
+                    mVideoView.changeUIBuffer();
+                    break;
+                case PlayState.STATE_AUTO_COMPLETE:
+                    mVideoView.changeUICompeted();
+                    break;
+                case PlayState.STATE_ERROR:
+                    mVideoView.changeUIError();
+                    break;
+                case PlayState.STATE_NET_ERROR:
+                    mVideoView.changeUINetError();
+                    break;
+                default:
+                    throw new IllegalStateException("Illegal Play State:" + playState);
+            }
+        }
+        //继续处理全屏状态
+        if (ScreenState.isFullScreen(screenType)) {
+            mVideoView.changeUIBackBtnShow();
+        }
+
     }
 
     /**
@@ -302,7 +351,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 mVideoView.hidePopView();
-                mVideoView.startDismissControlViewTimer();
+                mVideoView.startDismissFullScreenViewTimer();
                 setLastTouchFinish(true);
                 break;
             default:

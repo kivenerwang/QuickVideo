@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Handler;
@@ -235,6 +236,8 @@ public class IjkVideoView extends FrameLayout implements
      */
     private int mVideoHeight;
 
+    protected Bitmap mFullPauseBitmap = null;//暂停时的全屏图片；
+
     public IjkVideoView(@NonNull Context context) {
         super(context);
         initView(context);
@@ -366,7 +369,8 @@ public class IjkVideoView extends FrameLayout implements
     @OnClick(R2.id.btn_screen_rotate)
     void clickRotateBtn() {
         Activity activity = (Activity) getContext();
-        mPresenter.handleScreenRotate(activity.getRequestedOrientation());
+        int screenState = activity.getRequestedOrientation();
+        mPresenter.handleScreenRotate(screenState, mCurrentState);
     }
 
     @OnClick(R2.id.btn_lock)
@@ -480,35 +484,21 @@ public class IjkVideoView extends FrameLayout implements
         onChangeUIState(state);
     }
 
-    public void onChangeUIState(int state) {
-        switch (state) {
-            case PlayState.STATE_NORMAL:
-                changeUINormal();
-                break;
-            case PlayState.STATE_LOADING:
-                changeUILoading();
-                break;
-            case PlayState.STATE_PLAYING:
-                changeUIPlay();
-                break;
-            case PlayState.STATE_PAUSE:
-                changeUIPause();
-                break;
-            case PlayState.STATE_PLAYING_BUFFERING_START:
-                changeUIBuffer();
-                break;
-            case PlayState.STATE_AUTO_COMPLETE:
-                changeUICompeted();
-                break;
-            case PlayState.STATE_ERROR:
-                changeUIError();
-                break;
-            case PlayState.STATE_NET_ERROR:
-                changeUINetError();
-                break;
-            default:
-                throw new IllegalStateException("Illegal Play State:" + state);
-        }
+    public void onChangeUIState(int playState) {
+        Activity activity = (Activity) getContext();
+        int screenType = activity.getRequestedOrientation();
+        mPresenter.handleChangeUIState(screenType,playState, hasWindowFocus());
+    }
+
+    @Override
+    public void changeUIShowCover() {
+        Utils.showViewIfNeed(mVideoThumbView);
+        mStartButton.setImageResource(R.drawable.news_video_start);
+        Utils.showViewIfNeed(mStartButton);
+        Utils.showViewIfNeed(mTitleTextView);
+        Utils.hideViewIfNeed(mBottomContainer);
+        Utils.hideViewIfNeed(mBackButton);
+        cancleDismissControlViewTimer();
     }
 
     @Subscribe
@@ -517,8 +507,7 @@ public class IjkVideoView extends FrameLayout implements
             Activity activity = (Activity) getContext();
             int screenType = activity.getRequestedOrientation();
             if (screenType == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-                mPresenter.handleScreenRotate(screenType);
-                return;
+                mPresenter.handleScreenRotate(screenType, mCurrentState);
             }
         }
     }
@@ -569,6 +558,10 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mVideoThumbView);
         Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_start);
+        mBottomSeekBar.setProgress(0);
+        mBottomProgressBar.setProgress(0);
+        mBottomCurTimeView.setText(R.string.video_current_time);
+        cancleDismissControlViewTimer();
     }
 
     @Override
@@ -627,8 +620,6 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUIPause() {
-        //顶部返回键显示
-        mBackButton.setVisibility(View.VISIBLE);
         //顶部title显示
         Utils.showViewIfNeed(mTitleTextView);
         //loading 布局隐藏
@@ -653,7 +644,8 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mLoadingView);
         Activity activity = (Activity) getContext();
-        mPresenter.handleHideView(activity.getRequestedOrientation());
+        int screenState =  activity.getRequestedOrientation();
+        mPresenter.handleAutoHideView(screenState);
     }
 
     @Override
@@ -705,7 +697,7 @@ public class IjkVideoView extends FrameLayout implements
     public void changeUIFullScreen() {
         mToggleFullScreen = true;
         PlayerManager.getInstance().setScreenState(mCurrentScreenState = ScreenState.SCREEN_STATE_FULLSCREEN);
-        PlayerManager.getInstance().pause();
+
 
         ViewGroup windowContent = (ViewGroup) (Utils.getActivity(getContext())).findViewById(Window.ID_ANDROID_CONTENT);
         mVideoWidth = this.getWidth();
@@ -720,7 +712,6 @@ public class IjkVideoView extends FrameLayout implements
 
         Utils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
         Utils.getActivity(getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        PlayerManager.getInstance().play();
 
         mFullscreenButton.setImageResource(R.drawable.news_video_full_off);
 
@@ -729,6 +720,7 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mBatteryView);
         Utils.showViewIfNeed(mTimeView);
         Utils.showViewIfNeed(mTopStatusView);
+        Utils.showViewIfNeed(mBackButton);
     }
 
     @Override
@@ -738,7 +730,6 @@ public class IjkVideoView extends FrameLayout implements
         }
         mToggleFullScreen = true;
         PlayerManager.getInstance().setScreenState(mCurrentScreenState = ScreenState.SCREEN_STATE_NORMAL);
-        PlayerManager.getInstance().pause();
 
         ViewGroup windowContent = (ViewGroup) (Utils.getActivity(getContext())).findViewById(Window.ID_ANDROID_CONTENT);
         windowContent.removeView(this);
@@ -752,9 +743,7 @@ public class IjkVideoView extends FrameLayout implements
         mFullscreenButton.setImageResource(R.drawable.news_video_full_on);
         mOldParent = null;
         mOldIndex = 0;
-        if(mCurrentState != PlayState.STATE_AUTO_COMPLETE) {
-            PlayerManager.getInstance().play();
-        }
+
         Utils.hideViewIfNeed(mLockBtn);
         Utils.hideViewIfNeed(mBackButton);
         Utils.hideViewIfNeed(mWifiView);
@@ -784,7 +773,7 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void changeuiUnLock() {
+    public void changeUIUnLock() {
         mLockBtn.setImageResource(R.drawable.news_video_lock_off);
         Utils.showViewIfNeed(mTitleTextView);
         Utils.showViewIfNeed(mStartButton);
@@ -795,6 +784,41 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     public void updateCurPlayTime(String strSeekTime) {
         mBottomCurTimeView.setText(strSeekTime);
+    }
+
+    @Override
+    public void showCoverView() {
+        if (mFullPauseBitmap != null
+                && !mFullPauseBitmap.isRecycled()) {
+        } else {
+            //不在了说明已经播放过，还是暂停的话，我们拿回来就好
+            try {
+                initPauseCover();
+//                    mCurrentPosition = mVideoManager.getMediaplayerPosition();
+//                    mFullPauseBitmap = mVideoManager.getCurrentBitmap(mCurrentPosition);
+            } catch (Exception e) {
+                e.printStackTrace();
+                mFullPauseBitmap = null;
+            }
+        }
+    }
+
+    @Override
+    public void changeUIBackBtnShow() {
+        Utils.showViewIfNeed(mBackButton);
+    }
+
+    protected void initPauseCover() {
+        TextureView textureView = null;
+        try {
+            textureView= (TextureView) mTextureViewContainer.getChildAt(0);
+            Bitmap bitmap = Bitmap.createBitmap(textureView.getWidth(), textureView.getHeight(), Bitmap.Config.RGB_565);
+            mFullPauseBitmap = textureView.getBitmap(bitmap);
+        } catch (OutOfMemoryError e) {
+            Bitmap bitmap = Bitmap.createBitmap(textureView.getWidth(), textureView.getHeight(), Bitmap.Config.ALPHA_8);
+            mFullPauseBitmap = textureView.getBitmap(bitmap);
+            e.printStackTrace();
+        }
     }
 
     /************************ 全屏弹窗显示快进，快退，音量，屏幕亮度 ********************************/
@@ -1023,7 +1047,7 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void startDismissControlViewTimer() {
+    public void startDismissFullScreenViewTimer() {
         if (mHandler != null) {
             android.os.Message msg = new android.os.Message();
             msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;

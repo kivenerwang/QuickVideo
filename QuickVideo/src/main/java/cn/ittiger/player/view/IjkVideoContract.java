@@ -51,7 +51,9 @@ public interface IjkVideoContract {
 
         void changeUILock();
 
-        void changeuiUnLock();
+        void changeUIShowCover();
+
+        void changeUIUnLock();
 
         void hideViewInFullScreenState();
 
@@ -69,7 +71,7 @@ public interface IjkVideoContract {
 
         void cancleDismissControlViewTimer();
 
-        void startDismissControlViewTimer();
+        void startDismissFullScreenViewTimer();
 
         void showBrightnessAnimation();
 
@@ -84,13 +86,17 @@ public interface IjkVideoContract {
         void startDismissNormalViewTime();
 
         void updateCurPlayTime(String strSeekTime);
+        //显示截屏信息
+        void showCoverView();
+
+        void changeUIBackBtnShow();
     }
 
     interface IVideoPresenter {
         //处理视频container点击逻辑
         void handleClickContainerLogic(int playState, int screenState, boolean needHiden);
         //处理屏幕选择
-        void handleScreenRotate(int screenType);
+        void handleScreenRotate(int screenType, int screenState);
 
         void handleStartLogic(int mViewHash, String mVideoUrl, int state);
 
@@ -104,9 +110,11 @@ public interface IjkVideoContract {
 
         void handleContinuePlayMobileDataLogic(int playState);
 
-        void handleHideView(int requestedOrientation);
+        void handleAutoHideView(int requestedOrientation);
 
         boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition, int position);
+
+        void handleChangeUIState(int screenType, int playState, boolean hasFocus);
     }
 
 

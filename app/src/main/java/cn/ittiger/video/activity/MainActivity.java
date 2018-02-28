@@ -147,14 +147,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
 
         super.onPause();
-        PlayerManager.getInstance().pause();
+        PlayerManager.getInstance().onFragmentPause();
     }
 
     @Override
     protected void onResume() {
 
         super.onResume();
-        PlayerManager.getInstance().resume();
+        //PlayerManager.getInstance().resume();
     }
 
     private long exitTime = 0;

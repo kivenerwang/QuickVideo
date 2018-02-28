@@ -164,6 +164,15 @@ public final class PlayerManager implements IPlayer.PlayCallback {
         }
     }
 
+    public void onFragmentPause() {
+        int playState = getState();
+        if (playState == PlayState.STATE_PLAYING || playState == PlayState.STATE_PLAYING_BUFFERING_START) {
+            mPlayer.pause();
+        }
+        onPlayStateChanged(PlayState.STATE_PAUSE);
+    }
+
+
     public void pause() {
 
         if(getState() == PlayState.STATE_PLAYING) {
