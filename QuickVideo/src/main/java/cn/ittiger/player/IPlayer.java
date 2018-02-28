@@ -90,15 +90,39 @@ public interface IPlayer {
     void setTextureView(TextureView textureView);
 
     interface PlayCallback {
-
+        /**
+         * 播放错误
+         * @param error
+         */
         void onError(String error);
 
+        /**
+         * 播放完成
+         */
         void onComplete();
 
+        /**
+         * 播放状态发生变化
+         * @param state
+         */
         void onPlayStateChanged(int state);
 
+
+        /**
+         * 播放时长发生变化
+         * @param duration
+         */
         void onDurationChanged(int duration);
 
+        /**
+         * 播放缓冲进度更新
+         * @param percent
+         */
         void onBufferingUpdate(int percent);
+
+        /**
+         * 画面
+         */
+        void onSurfaceTextureAvailable();
     }
 }

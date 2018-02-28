@@ -176,7 +176,11 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
         try {
             mMediaPlayer.setSurface(new Surface(surface));
         } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        if(mPlayCallback != null) {
+            mPlayCallback.onSurfaceTextureAvailable();
         }
         super.onSurfaceTextureAvailable(surface, width, height);
     }

@@ -150,7 +150,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         //判断的播放状态，是否需要截屏
         if ((playState == PlayState.STATE_PAUSE
                 || playState == PlayState.STATE_PLAYING_BUFFERING_START)) {
-            mVideoView.showCoverView();
+            mVideoView.makeScreenShotsInfo();
         }
 
         if (ScreenState.isNormal(screenType)) {
@@ -166,7 +166,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     @Override
     public void handleStartLogic(int mViewHash, String mVideoUrl, int state) {
         if (TextUtils.isEmpty(mVideoUrl)) {
-            mVideoView.showErrorToast();
+            mVideoView.showToast(R.string.no_url);
         }
         if(!PlayerManager.getInstance().isViewPlaying(mViewHash)) {
             //存在正在播放的视频，先将上一个视频停止播放，再继续下一个视频的操作
@@ -241,6 +241,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     @Override
     public void handleChangeUIState(int screenType, int playState, boolean hasFocus) {
         if (playState != PlayState.STATE_NORMAL && !hasFocus) {
+            mVideoView.makeScreenShotsInfo();
             mVideoView.changeUIShowCover();
         } else {
             switch (playState) {
@@ -252,6 +253,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                     break;
                 case PlayState.STATE_PLAYING:
                     mVideoView.changeUIPlay();
+                    mVideoView.releaseScreenShots();
                     break;
                 case PlayState.STATE_PAUSE:
                     mVideoView.changeUIPause();
@@ -277,6 +279,13 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             mVideoView.changeUIBackBtnShow();
         }
 
+    }
+
+    @Override
+    public void handleViewChange(int playState) {
+        if (playState == PlayState.STATE_PAUSE || playState == PlayState.STATE_PLAYING_BUFFERING_START) {
+            mVideoView.showScreenShots();
+        }
     }
 
     /**

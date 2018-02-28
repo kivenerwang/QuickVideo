@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -17,6 +20,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +52,7 @@ import butterknife.OnTouch;
 import cn.ittiger.player.message.DurationMessage;
 import cn.ittiger.player.message.Message;
 import cn.ittiger.player.message.UIStateMessage;
+import cn.ittiger.player.message.ViewMessage;
 import cn.ittiger.player.state.PlayState;
 import cn.ittiger.player.state.ScreenState;
 import cn.ittiger.player.util.Utils;
@@ -380,7 +385,9 @@ public class IjkVideoView extends FrameLayout implements
 
     @OnClick(R2.id.btn_back)
     void clickBackBtn() {
-        changeUINormalScreen();
+        Activity activity = (Activity) getContext();
+        int screenType = activity.getRequestedOrientation();
+        mPresenter.handleScreenRotate(screenType, mCurrentState);
     }
 
 
@@ -454,17 +461,27 @@ public class IjkVideoView extends FrameLayout implements
             return;
         }
 
-        if(!(arg instanceof UIStateMessage)) {
+        if((arg instanceof UIStateMessage)) {
+            ((Activity)getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    onPlayStateChanged(((UIStateMessage) arg).getState());
+                }
+            });
             return;
         }
-        ((Activity)getContext()).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
 
-                onPlayStateChanged(((UIStateMessage) arg).getState());
-            }
-        });
+        if((arg instanceof ViewMessage)) {
+            ((Activity)getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
+                    mPresenter.handleViewChange(mCurrentState);
+                }
+            });
+            return;
+        }
 
     }
 
@@ -753,12 +770,6 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void showErrorToast() {
-        Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT)
-                .show();
-    }
-
-    @Override
     public void changeUILock() {
         mLockBtn.setImageResource(R.drawable.news_video_lock_on);
         Utils.hideViewIfNeed(mTitleTextView);
@@ -787,19 +798,12 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void showCoverView() {
-        if (mFullPauseBitmap != null
-                && !mFullPauseBitmap.isRecycled()) {
-        } else {
-            //不在了说明已经播放过，还是暂停的话，我们拿回来就好
-            try {
-                initPauseCover();
-//                    mCurrentPosition = mVideoManager.getMediaplayerPosition();
-//                    mFullPauseBitmap = mVideoManager.getCurrentBitmap(mCurrentPosition);
-            } catch (Exception e) {
-                e.printStackTrace();
-                mFullPauseBitmap = null;
-            }
+    public void makeScreenShotsInfo() {
+        try {
+            makeScreenShots();
+        } catch (Exception e) {
+            e.printStackTrace();
+            mFullPauseBitmap = null;
         }
     }
 
@@ -813,7 +817,13 @@ public class IjkVideoView extends FrameLayout implements
         mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
     }
 
-    protected void initPauseCover() {
+    @Override
+    public void showScreenShots() {
+        mVideoThumbView.setImageBitmap(mFullPauseBitmap);
+        Utils.showViewIfNeed(mVideoThumbView);
+    }
+
+    protected void makeScreenShots() {
         TextureView textureView = null;
         try {
             textureView= (TextureView) mTextureViewContainer.getChildAt(0);
@@ -822,6 +832,23 @@ public class IjkVideoView extends FrameLayout implements
         } catch (OutOfMemoryError e) {
             Bitmap bitmap = Bitmap.createBitmap(textureView.getWidth(), textureView.getHeight(), Bitmap.Config.ALPHA_8);
             mFullPauseBitmap = textureView.getBitmap(bitmap);
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 销毁暂停切换显示的bitmap
+     */
+    public void releaseScreenShots() {
+        try {
+            if (mFullPauseBitmap != null
+                    && !mFullPauseBitmap.isRecycled()) {
+                mFullPauseBitmap.recycle();
+                mFullPauseBitmap = null;
+            }
+            Utils.hideViewIfNeed(mVideoThumbView);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

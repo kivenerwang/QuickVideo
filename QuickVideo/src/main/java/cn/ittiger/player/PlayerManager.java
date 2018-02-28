@@ -10,6 +10,7 @@ import cn.ittiger.player.message.BufferPointMessage;
 import cn.ittiger.player.message.DurationMessage;
 import cn.ittiger.player.message.Message;
 import cn.ittiger.player.message.UIStateMessage;
+import cn.ittiger.player.message.ViewMessage;
 import cn.ittiger.player.state.PlayState;
 import cn.ittiger.player.state.ScreenState;
 import cn.ittiger.player.util.Utils;
@@ -303,6 +304,13 @@ public final class PlayerManager implements IPlayer.PlayCallback {
     @Override
     public void onBufferingUpdate(int percent) {
         mPlayStateObservable.notify(new BufferPointMessage(mObserverHash, mVideoUrl, percent));
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable() {
+        if (mPlayStateObservable != null) {
+            mPlayStateObservable.notify(new ViewMessage(mObserverHash, mVideoUrl));
+        }
     }
 
     void addObserver(Observer observer) {

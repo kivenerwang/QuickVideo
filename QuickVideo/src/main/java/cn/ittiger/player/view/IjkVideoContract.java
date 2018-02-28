@@ -67,9 +67,6 @@ public interface IjkVideoContract {
         //显示全屏状态下的控件
         void showViewInFullScreenState();
 
-        //网络错误提示
-        void showErrorToast();
-
         //视频快进动画
         void showPositionRightAnimation(String seekTime, String totalTime);
 
@@ -112,12 +109,23 @@ public interface IjkVideoContract {
         //更新当前的播放视频
         void updateCurPlayTime(String strSeekTime);
         //显示截屏信息
-        void showCoverView();
+        void makeScreenShotsInfo();
 
         //视频返回键显示
         void changeUIBackBtnShow();
         //开始更新底部播放信息
         void startUpdateBottomPlayInfo();
+
+        /**
+         * 暂停的选择屏幕显示截屏
+         */
+        void showScreenShots();
+
+        /**
+         * 销毁截屏图片
+         * 调用时机在视频返回正常状态或者继续播放的时候
+         */
+        void releaseScreenShots();
     }
 
     interface IVideoPresenter {
@@ -143,6 +151,8 @@ public interface IjkVideoContract {
         boolean handleBottomSeekBarTouchLogic(int playState, MotionEvent event, int currentPosition, int position);
 
         void handleChangeUIState(int screenType, int playState, boolean hasFocus);
+
+        void handleViewChange(int playState);
     }
 
 
