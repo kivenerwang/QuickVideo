@@ -124,6 +124,9 @@ public class IjkVideoView extends FrameLayout implements
     @BindView(R2.id.vp_video_thumb)
     ImageView mVideoThumbView;
 
+    @BindView(R2.id.video_screen_shot)
+    ImageView mScreenShotView;
+
     @BindView(R2.id.system_status_view)
     ViewGroup mTopStatusView;
 
@@ -638,15 +641,7 @@ public class IjkVideoView extends FrameLayout implements
     public void changeUIPlay() {
         Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_pause);
-        //隐藏视频预览图
-        if (mScreenShotsBitmap != null && !mScreenShotsBitmap.isRecycled()) {
-            Utils.hideViewIfNeed(mVideoThumbView);
-        } else {
-            Log.i("dongdong", "error changeUIPlay" + Log.getStackTraceString(new Throwable()));
-        }
-
-
-
+        Utils.hideViewIfNeed(mVideoThumbView);
         Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mLoadingView);
         Activity activity = (Activity) getContext();
@@ -809,8 +804,8 @@ public class IjkVideoView extends FrameLayout implements
     @Override
     public void showScreenShots() {
         if (mScreenShotsBitmap != null && !mScreenShotsBitmap.isRecycled()) {
-            mVideoThumbView.setImageBitmap(mScreenShotsBitmap);
-            Utils.showViewIfNeed(mVideoThumbView);
+            mScreenShotView.setImageBitmap(mScreenShotsBitmap);
+            Utils.showViewIfNeed(mScreenShotView);
             mStartButton.setImageResource(R.drawable.news_video_start);
             Utils.showViewIfNeed(mStartButton);
             Utils.showViewIfNeed(mTitleTextView);
@@ -844,12 +839,12 @@ public class IjkVideoView extends FrameLayout implements
      */
     public void releaseScreenShots() {
         try {
+            Utils.hideViewIfNeed(mScreenShotView);
             if (mScreenShotsBitmap != null
                     && !mScreenShotsBitmap.isRecycled()) {
                 mScreenShotsBitmap.recycle();
                 mScreenShotsBitmap = null;
             }
-            Utils.hideViewIfNeed(mVideoThumbView);
         } catch (Exception e) {
             e.printStackTrace();
         }
