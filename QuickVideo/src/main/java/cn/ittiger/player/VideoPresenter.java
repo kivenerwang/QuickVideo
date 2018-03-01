@@ -54,7 +54,6 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     @Override
     public void handleNetChangeLogic(int netType) {
-        Log.i("dongdong","handle net  change =" + netType);
         if (PlayerManager.getInstance().isPlaying()) {
             if (netType ==  ConnectivityManager.TYPE_WIFI) {
 
@@ -150,21 +149,30 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         //判断的播放状态，是否需要截屏
         if ((playState == PlayState.STATE_PAUSE
                 || playState == PlayState.STATE_PLAYING_BUFFERING_START)) {
+
             mVideoView.makeScreenShotsInfo();
         }
 
         if (ScreenState.isNormal(screenType)) {
             //当前小屏，需要且成全屏
             mVideoView.changeUIFullScreen();
-            mVideoView.startDismissFullScreenViewTimer();
         } else {
             //当前屏幕是全屏，需要切出正常屏幕
             mVideoView.changeUINormalScreen();
         }
+        //屏幕选择
+        if (playState != PlayState.STATE_PAUSE) {
+            if (ScreenState.isNormal(screenType)) {
+                mVideoView.startDismissFullScreenViewTimer();
+            } else {
+                mVideoView.startDismissNormalViewTime();
+            }
+
+        }
     }
 
     @Override
-    public void handleStartLogic(int mViewHash, String mVideoUrl, int state) {
+    public void handleClickStartLogic(int mViewHash, String mVideoUrl, int state) {
         if (TextUtils.isEmpty(mVideoUrl)) {
             mVideoView.showToast(R.string.no_url);
         }
@@ -184,6 +192,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 break;
             case PlayState.STATE_PLAYING:
                 PlayerManager.getInstance().pause();
+                mVideoView.cancleDismissControlViewTimer();
                 break;
             case PlayState.STATE_PAUSE:
                 PlayerManager.getInstance().play();

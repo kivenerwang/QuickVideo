@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -16,11 +13,11 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -367,7 +364,7 @@ public class IjkVideoView extends FrameLayout implements
 
     @OnClick(R2.id.btn_start)
     void clickStartBtn() {
-        mPresenter.handleStartLogic(mViewHash, mVideoUrl, mCurrentState);
+        mPresenter.handleClickStartLogic(mViewHash, mVideoUrl, mCurrentState);
     }
 
 
@@ -508,6 +505,7 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUIShowCover() {
+        Log.i("dongdong", "error are here changeUIShowCover");
         Utils.showViewIfNeed(mVideoThumbView);
         mStartButton.setImageResource(R.drawable.news_video_start);
         Utils.showViewIfNeed(mStartButton);
@@ -570,7 +568,7 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUICompeted() {
-    //显示视频预览图
+        //显示视频预览图
         Utils.showViewIfNeed(mVideoThumbView);
         Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_start);
@@ -612,7 +610,6 @@ public class IjkVideoView extends FrameLayout implements
 
         //显示视频预览图
         Utils.showViewIfNeed(mVideoThumbView);
-
         //显示视频标题
         Utils.showViewIfNeed(mTitleTextView);
         //隐藏视频返回键
@@ -818,11 +815,19 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void showScreenShots() {
-        mVideoThumbView.setImageBitmap(mFullPauseBitmap);
-        Utils.showViewIfNeed(mVideoThumbView);
+        if (mFullPauseBitmap != null && !mFullPauseBitmap.isRecycled()) {
+            mVideoThumbView.setImageBitmap(mFullPauseBitmap);
+            Utils.showViewIfNeed(mVideoThumbView);
+        } else {
+            Log.i("dongdong", "error are showScreenShots"+ Log.getStackTraceString(new Throwable()));
+        }
     }
 
     protected void makeScreenShots() {
+        if (mFullPauseBitmap != null) {
+            //上次截屏的bitmap 未释放，可以重复使用
+            return;
+        }
         TextureView textureView = null;
         try {
             textureView= (TextureView) mTextureViewContainer.getChildAt(0);
@@ -856,6 +861,9 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void showPositionLiftAnimation(String seekTime, String totalTime) {
+        if (TextUtils.isEmpty(seekTime) || TextUtils.isEmpty(totalTime)) {
+            return;
+        }
         Utils.showViewIfNeed(mPopView);
         Utils.showViewIfNeed(mPopIconView);
         Utils.showViewIfNeed(mPopContentView);
@@ -874,6 +882,9 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void showPositionRightAnimation(String seekTime, String totalTime) {
+        if (TextUtils.isEmpty(seekTime) || TextUtils.isEmpty(totalTime)) {
+            return;
+        }
         Utils.showViewIfNeed(mPopView);
         Utils.showViewIfNeed(mPopIconView);
         Utils.showViewIfNeed(mPopContentView);
@@ -1014,7 +1025,9 @@ public class IjkVideoView extends FrameLayout implements
      * 更新loading速度
      */
     protected void updateLoadingProgress(android.os.Message msg) {
-
+        if (msg == null) {
+            return;
+        }
         //TODO 根据IjkPlayer 获取
         int bufferCount = msg.arg1;
         bufferCount = (bufferCount > 100) ? 100 : bufferCount;
@@ -1057,6 +1070,9 @@ public class IjkVideoView extends FrameLayout implements
      * 更新视频控制界面
      */
     public void updateControllerView(android.os.Message msg) {
+        if (msg == null) {
+            return;
+        }
         if (mCurrentState != PlayState.STATE_NORMAL
                 && mCurrentState != PlayState.STATE_ERROR
                 && mCurrentState != PlayState.STATE_AUTO_COMPLETE) {

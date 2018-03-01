@@ -52,7 +52,10 @@ public interface IjkVideoContract {
         //视频屏幕解锁UI
         void changeUIUnLock();
 
-        //视频显示封面
+        /**
+         * 视频显示封面
+         * 使用场景视频暂停状态下view失去焦点的时候，需要去再次绘制一下
+         */
         void changeUIShowCover();
 
         //隐藏正常屏幕下的控件
@@ -134,7 +137,7 @@ public interface IjkVideoContract {
         //处理屏幕选择
         void handleScreenRotate(int screenType, int screenState);
 
-        void handleStartLogic(int mViewHash, String mVideoUrl, int state);
+        void handleClickStartLogic(int mViewHash, String mVideoUrl, int state);
 
         void handleLockLogic();
 
