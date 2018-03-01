@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="cn.ittiger.player"
+<manifest package="com.browser2345.player"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BATTERY_STATS" />
     <application >
-        <receiver android:name=".NetReceiver">
+        <receiver android:name="com.browser2345.player.NetReceiver">
             <intent-filter android:priority="2147483647">
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>

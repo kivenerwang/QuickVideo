@@ -9,7 +9,7 @@ import android.view.View;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.ittiger.player.PlayerManager;
+import com.browser2345.player.PlayerManager;
 import cn.ittiger.video.R;
 import cn.ittiger.video.adapter.VideoAdapter;
 import cn.ittiger.video.bean.VideoData;

@@ -40,7 +40,7 @@
         android:layout_marginTop="@dimen/dimen_13"
         android:visibility="gone">
 
-        <cn.ittiger.player.view.NetStatusView
+        <com.browser2345.player.view.NetStatusView
             android:id="@+id/data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             android:src="@drawable/news_video_wifi_3"
             android:visibility="visible" />
 
-        <cn.ittiger.player.view.BatteryView
+        <com.browser2345.player.view.BatteryView
             android:id="@+id/battery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
             android:src="@drawable/quick_player_battery"
             android:visibility="visible" />
 
-        <cn.ittiger.player.view.DigitalClock
+        <com.browser2345.player.view.DigitalClock
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

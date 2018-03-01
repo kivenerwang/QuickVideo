@@ -3,7 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 
-    <cn.ittiger.player.IjkVideoView
+    <com.browser2345.player.IjkVideoView
         android:id="@+id/video_player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

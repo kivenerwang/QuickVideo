@@ -11,7 +11,7 @@ import android.widget.ImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.ittiger.player.IjkVideoView;
+import com.browser2345.player.IjkVideoView;
 import cn.ittiger.video.R;
 import cn.ittiger.video.bean.VideoData;
 import cn.ittiger.video.ui.recycler.HeaderAndFooterAdapter;

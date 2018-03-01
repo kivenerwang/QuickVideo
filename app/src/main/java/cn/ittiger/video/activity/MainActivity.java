@@ -24,7 +24,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.ittiger.player.PlayerManager;
+import com.browser2345.player.PlayerManager;
 import cn.ittiger.video.R;
 import cn.ittiger.video.app.TigerApplication;
 import cn.ittiger.video.factory.FragmentFactory;
