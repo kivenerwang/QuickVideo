@@ -251,7 +251,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     public void handleChangeUIState(int screenType, int playState, boolean hasFocus) {
         if (playState != PlayState.STATE_NORMAL && !hasFocus) {
             mVideoView.makeScreenShotsInfo();
-            mVideoView.changeUIShowCover();
+            mVideoView.showScreenShots();
         } else {
             switch (playState) {
                 case PlayState.STATE_NORMAL:

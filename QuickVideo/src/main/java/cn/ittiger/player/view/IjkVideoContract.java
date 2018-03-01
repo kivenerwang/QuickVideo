@@ -52,12 +52,6 @@ public interface IjkVideoContract {
         //视频屏幕解锁UI
         void changeUIUnLock();
 
-        /**
-         * 视频显示封面
-         * 使用场景视频暂停状态下view失去焦点的时候，需要去再次绘制一下
-         */
-        void changeUIShowCover();
-
         //隐藏正常屏幕下的控件
         void hidenNormalScreenView();
 

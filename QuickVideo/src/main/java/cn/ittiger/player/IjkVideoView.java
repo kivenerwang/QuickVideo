@@ -238,7 +238,7 @@ public class IjkVideoView extends FrameLayout implements
      */
     private int mVideoHeight;
 
-    protected Bitmap mFullPauseBitmap = null;//暂停时的全屏图片；
+    protected Bitmap mScreenShotsBitmap = null;//暂停时的全屏图片；
 
     public IjkVideoView(@NonNull Context context) {
         super(context);
@@ -503,18 +503,6 @@ public class IjkVideoView extends FrameLayout implements
         mPresenter.handleChangeUIState(screenType,playState, hasWindowFocus());
     }
 
-    @Override
-    public void changeUIShowCover() {
-        Log.i("dongdong", "error are here changeUIShowCover");
-        Utils.showViewIfNeed(mVideoThumbView);
-        mStartButton.setImageResource(R.drawable.news_video_start);
-        Utils.showViewIfNeed(mStartButton);
-        Utils.showViewIfNeed(mTitleTextView);
-        Utils.hideViewIfNeed(mBottomContainer);
-        Utils.hideViewIfNeed(mBackButton);
-        cancleDismissControlViewTimer();
-    }
-
     @Subscribe
     public void onKeyEvent(KeyMsgEvent msg) {
         if (msg != null && msg.getKeyCode() == KeyEvent.KEYCODE_BACK) {
@@ -607,7 +595,6 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUINormal() {
-
         //显示视频预览图
         Utils.showViewIfNeed(mVideoThumbView);
         //显示视频标题
@@ -652,7 +639,13 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_pause);
         //隐藏视频预览图
-        Utils.hideViewIfNeed(mVideoThumbView);
+        if (mScreenShotsBitmap != null && !mScreenShotsBitmap.isRecycled()) {
+            Utils.hideViewIfNeed(mVideoThumbView);
+        } else {
+            Log.i("dongdong", "error changeUIPlay" + Log.getStackTraceString(new Throwable()));
+        }
+
+
 
         Utils.hideViewIfNeed(mReplayView);
         Utils.hideViewIfNeed(mLoadingView);
@@ -799,7 +792,7 @@ public class IjkVideoView extends FrameLayout implements
             makeScreenShots();
         } catch (Exception e) {
             e.printStackTrace();
-            mFullPauseBitmap = null;
+            mScreenShotsBitmap = null;
         }
     }
 
@@ -815,16 +808,21 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void showScreenShots() {
-        if (mFullPauseBitmap != null && !mFullPauseBitmap.isRecycled()) {
-            mVideoThumbView.setImageBitmap(mFullPauseBitmap);
+        if (mScreenShotsBitmap != null && !mScreenShotsBitmap.isRecycled()) {
+            mVideoThumbView.setImageBitmap(mScreenShotsBitmap);
             Utils.showViewIfNeed(mVideoThumbView);
+            mStartButton.setImageResource(R.drawable.news_video_start);
+            Utils.showViewIfNeed(mStartButton);
+            Utils.showViewIfNeed(mTitleTextView);
+            Utils.hideViewIfNeed(mBottomContainer);
+            Utils.hideViewIfNeed(mBackButton);
         } else {
             Log.i("dongdong", "error are showScreenShots"+ Log.getStackTraceString(new Throwable()));
         }
     }
 
     protected void makeScreenShots() {
-        if (mFullPauseBitmap != null) {
+        if (mScreenShotsBitmap != null) {
             //上次截屏的bitmap 未释放，可以重复使用
             return;
         }
@@ -832,10 +830,10 @@ public class IjkVideoView extends FrameLayout implements
         try {
             textureView= (TextureView) mTextureViewContainer.getChildAt(0);
             Bitmap bitmap = Bitmap.createBitmap(textureView.getWidth(), textureView.getHeight(), Bitmap.Config.RGB_565);
-            mFullPauseBitmap = textureView.getBitmap(bitmap);
+            mScreenShotsBitmap = textureView.getBitmap(bitmap);
         } catch (OutOfMemoryError e) {
             Bitmap bitmap = Bitmap.createBitmap(textureView.getWidth(), textureView.getHeight(), Bitmap.Config.ALPHA_8);
-            mFullPauseBitmap = textureView.getBitmap(bitmap);
+            mScreenShotsBitmap = textureView.getBitmap(bitmap);
             e.printStackTrace();
         }
     }
@@ -846,10 +844,10 @@ public class IjkVideoView extends FrameLayout implements
      */
     public void releaseScreenShots() {
         try {
-            if (mFullPauseBitmap != null
-                    && !mFullPauseBitmap.isRecycled()) {
-                mFullPauseBitmap.recycle();
-                mFullPauseBitmap = null;
+            if (mScreenShotsBitmap != null
+                    && !mScreenShotsBitmap.isRecycled()) {
+                mScreenShotsBitmap.recycle();
+                mScreenShotsBitmap = null;
             }
             Utils.hideViewIfNeed(mVideoThumbView);
         } catch (Exception e) {
