@@ -253,10 +253,6 @@ public final class PlayerManager implements IPlayer.PlayCallback {
     }
 
     public void seekTo(int position) {
-
-        if(isPlaying()) {
-            onPlayStateChanged(PlayState.STATE_PLAYING_BUFFERING_START);
-        }
         mPlayer.seekTo(position);
     }
 

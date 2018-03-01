@@ -147,8 +147,12 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
 
     @Override
     public void onBufferingUpdate(IMediaPlayer mp, int percent) {
-
+        if(mPlayCallback != null) {
+            mPlayCallback.onBufferingUpdate(percent);
+        }
     }
+
+
 
     @Override
     public void onSeekComplete(IMediaPlayer mp) {
@@ -159,7 +163,6 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
 
     @Override
     public boolean onError(IMediaPlayer mp, int what, int extra) {
-        Log.i("dongdong", "ijk player OnError what=" + what + ", extra=" + extra);
         if (mPlayCallback != null) {
             mPlayCallback.onError("Play error, what=" + what + ", extra=" + extra);
         }
@@ -168,6 +171,7 @@ public class IjkVideoPlayer extends AbsSimplePlayer implements IMediaPlayer.OnPr
 
     @Override
     public boolean onInfo(IMediaPlayer mp, int what, int extra) {
+
         return false;
     }
 

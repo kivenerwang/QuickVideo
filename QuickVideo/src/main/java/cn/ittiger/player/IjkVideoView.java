@@ -650,9 +650,10 @@ public class IjkVideoView extends FrameLayout implements
     }
 
     @Override
-    public void changeUIBuffer() {
+    public void changeUIBufferStart() {
         Utils.showViewIfNeed(mLoadingView);
         Utils.hideViewIfNeed(mStartButton);
+        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_LOADING_SPEED, ProgressHandler.TIME_UPDATE_LOADING_SPEED);
     }
 
     @Override

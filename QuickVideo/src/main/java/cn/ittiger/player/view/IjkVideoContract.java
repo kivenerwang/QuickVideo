@@ -26,8 +26,8 @@ public interface IjkVideoContract {
         //视频播放中UI
         void changeUIPlay();
 
-        //视频缓冲UI
-        void changeUIBuffer();
+        //视频开始缓冲UI
+        void changeUIBufferStart();
         //视频播放完成UI
         void changeUICompeted();
 

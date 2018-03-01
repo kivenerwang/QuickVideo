@@ -3,7 +3,6 @@ package cn.ittiger.player;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.quickplayer.CompatApplication;
@@ -268,7 +267,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                     mVideoView.changeUIPause();
                     break;
                 case PlayState.STATE_PLAYING_BUFFERING_START:
-                    mVideoView.changeUIBuffer();
+                    mVideoView.changeUIBufferStart();
                     break;
                 case PlayState.STATE_AUTO_COMPLETE:
                     mVideoView.changeUICompeted();

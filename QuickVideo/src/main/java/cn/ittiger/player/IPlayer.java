@@ -107,7 +107,6 @@ public interface IPlayer {
          */
         void onPlayStateChanged(int state);
 
-
         /**
          * 播放时长发生变化
          * @param duration
