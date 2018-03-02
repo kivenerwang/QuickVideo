@@ -40,7 +40,7 @@ dependencies {
     compile 'cn.ittiger:tigerdb:1.0'
 
     //butterknife
-    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'com.jakewharton:butterknife:8.8.1'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
 
     //retrofit

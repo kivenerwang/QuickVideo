@@ -4,8 +4,6 @@ import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.text.TextUtils;
 import android.view.MotionEvent;
-
-import com.quickplayer.CompatApplication;
 import com.quickplayer.utils.NetworkUtils;
 
 import com.browser2345.player.state.PlayState;
