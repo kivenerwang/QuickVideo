@@ -52,12 +52,12 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
 
     @Override
-    public void handleNetChangeLogic(int netType) {
+    public void handleNetChangeLogic(int netType, boolean needWifiTip) {
         if (PlayerManager.getInstance().isPlaying()) {
             if (netType ==  ConnectivityManager.TYPE_WIFI) {
 
             } else if (netType == ConnectivityManager.TYPE_MOBILE) {
-                handleMobileDataLogic();
+                handleMobileDataLogic(needWifiTip);
             } else if (netType == -1) {
 
             }
@@ -66,10 +66,11 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     /**
      * 处理当前流量情况下的逻辑
+     * @param needWifiTip
      */
-    private boolean handleMobileDataLogic() {
+    private boolean handleMobileDataLogic(boolean needWifiTip) {
         boolean result;
-        if (CompatApplication.isNeedShowWifiTip()) {
+        if (needWifiTip) {
             PlayerManager.getInstance().pause();
             mVideoView.showMobileDataDialog();
             result = false;
@@ -81,14 +82,14 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleClickContainerLogic(int playState, int screenState, boolean needHiden) {
+    public void handleClickContainerLogic(int playState, int screenState, boolean needHiden, boolean needWifiTip) {
         if (mLockState) {
             //屏幕锁住状态，不做任何处理。
             return;
         }
         switch (playState) {
             case PlayState.STATE_NORMAL:
-                if (!isNetworkAvailable()) {
+                if (!isNetworkAvailable(needWifiTip)) {
                     return;
                 }
                 mVideoView.startPlayVideo();
@@ -123,11 +124,11 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
      * 判断当前网络状态是否可以播放的逻辑
      * @return
      */
-    private boolean isNetworkAvailable() {
+    private boolean isNetworkAvailable(boolean needWifiTip) {
         boolean enable = true;
         if (NetworkUtils.isNetworkAvailable()) {
             if (NetworkUtils.isMobileConnected()) {
-                enable = handleMobileDataLogic();
+                enable = handleMobileDataLogic(needWifiTip);
             }
         } else {
             mVideoView.showToast(R.string.net_error_text);
@@ -170,7 +171,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
     }
 
     @Override
-    public void handleClickStartLogic(int mViewHash, String mVideoUrl, int state) {
+    public void handleClickStartLogic(int mViewHash, String mVideoUrl, int state, boolean needWifiTip) {
         if (TextUtils.isEmpty(mVideoUrl)) {
             mVideoView.showToast(R.string.no_url);
         }
@@ -179,7 +180,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             PlayerManager.getInstance().stop();
         }
 
-        if (!isNetworkAvailable()) {
+        if (!isNetworkAvailable(needWifiTip)) {
             return;
         }
 
@@ -505,7 +506,6 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         } else if (playState == PlayState.STATE_PAUSE){
             PlayerManager.getInstance().play();
         }
-        CompatApplication.setNeedShowWifiTip(false);
         mVideoView.hideMobileDataDialog();
 
     }
@@ -514,7 +514,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     @Override
     public void handleStopPlayMobileDataLogic() {
-        CompatApplication.setNeedShowWifiTip(true);
         mVideoView.hideMobileDataDialog();
+        mVideoView.setNeedWifiTip(true);
     }
 }

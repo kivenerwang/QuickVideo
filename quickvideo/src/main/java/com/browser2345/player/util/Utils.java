@@ -175,20 +175,4 @@ public class Utils {
 
         return context.getExternalCacheDir().getAbsolutePath() + "/VideoCache";
     }
-
-    /**
-     * 判断网络连接是否有效（此时可传输数据）。
-     * <p>需添加权限 {@code <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>}</p>
-     * 如果未添加此权限则返回true
-     *
-     * @return boolean 不管wifi，还是mobile net，只有当前在连接状态（可有效传输数据）才返回true,反之false。
-     */
-    public static boolean isConnected(Context context) {
-        try {
-            NetworkInfo net = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-            return net != null && net.isConnected();
-        } catch(Exception e) {
-            return true;
-        }
-    }
 }

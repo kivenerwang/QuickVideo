@@ -8,15 +8,6 @@ import android.app.Application;
 
 public class CompatApplication {
     protected static Application sApplication = null;
-    private static boolean mNeedShowWifiTip = true;
-
-    public static boolean isNeedShowWifiTip() {
-        return mNeedShowWifiTip;
-    }
-
-    public static void setNeedShowWifiTip(boolean mNeedShowWifiTip) {
-        CompatApplication.mNeedShowWifiTip = mNeedShowWifiTip;
-    }
 
     public static Application getApplication() {
         return sApplication;

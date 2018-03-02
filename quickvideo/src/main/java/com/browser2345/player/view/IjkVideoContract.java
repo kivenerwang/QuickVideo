@@ -123,21 +123,27 @@ public interface IjkVideoContract {
          * 调用时机在视频返回正常状态或者继续播放的时候
          */
         void releaseScreenShots();
+
+        /**
+         * 设置是否需要流量弹框提醒
+         * @param needWifiTip
+         */
+        void setNeedWifiTip(boolean needWifiTip);
     }
 
     interface IVideoPresenter {
         //处理视频container点击逻辑
-        void handleClickContainerLogic(int playState, int screenState, boolean needHiden);
+        void handleClickContainerLogic(int playState, int screenState, boolean needHiden, boolean needWifiTip);
         //处理屏幕选择
         void handleScreenRotate(int screenType, int screenState);
 
-        void handleClickStartLogic(int mViewHash, String mVideoUrl, int state);
+        void handleClickStartLogic(int mViewHash, String mVideoUrl, int state, boolean needWifiTip);
 
         void handleLockLogic();
 
         boolean handleContainerTouchLogic(int playState, MotionEvent event, int screenWidth, int screenHight, int screenType);
 
-        void handleNetChangeLogic(int netType);
+        void handleNetChangeLogic(int netType, boolean needWifiTip);
 
         void handleStopPlayMobileDataLogic();
 

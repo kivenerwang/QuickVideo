@@ -3,11 +3,14 @@ package com.browser2345.player;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -58,6 +61,7 @@ import com.browser2345.player.view.CustomDialog;
 import com.browser2345.player.view.DigitalClock;
 import com.browser2345.player.view.IjkVideoContract;
 import com.browser2345.player.view.NetStatusView;
+import com.quickplayer.utils.NetworkUtils;
 
 /**
  * Created by kiven on 2/1/18.
@@ -182,15 +186,6 @@ public class IjkVideoView extends FrameLayout implements
      */
     private int mScreenHight;
     /**
-     * 小窗口的宽度
-     */
-    private int mSmallWindowWidth;
-    /**
-     * 小窗口的高度
-     */
-    private int mSmallWindowHeight;
-
-    /**
      * 视频标题
      */
     private CharSequence mVideoTitle;
@@ -306,8 +301,6 @@ public class IjkVideoView extends FrameLayout implements
 
     private void initData(Context context) {
         mViewHash = this.toString().hashCode();
-        mSmallWindowWidth = mScreenWidth / 2;
-        mSmallWindowHeight = (int) (mSmallWindowWidth * 1.0f / (double)16 * 9 + 0.5f);
         mHandler = new ProgressHandler(this);
         mBottomSeekBar.setOnSeekBarChangeListener(this);
     }
@@ -361,13 +354,15 @@ public class IjkVideoView extends FrameLayout implements
         }
         Activity activity = (Activity) getContext();
         int screenState = activity.getRequestedOrientation();
-        mPresenter.handleClickContainerLogic(mCurrentState, screenState, mBottomContainer.getVisibility() ==VISIBLE);
+        boolean needWifiTip = isNeedWifiTip();
+        mPresenter.handleClickContainerLogic(mCurrentState, screenState, mBottomContainer.getVisibility() ==VISIBLE, needWifiTip);
     }
 
 
     @OnClick(R2.id.btn_start)
     void clickStartBtn() {
-        mPresenter.handleClickStartLogic(mViewHash, mVideoUrl, mCurrentState);
+        boolean needWifiTip = isNeedWifiTip();
+        mPresenter.handleClickStartLogic(mViewHash, mVideoUrl, mCurrentState, needWifiTip);
     }
 
 
@@ -502,6 +497,9 @@ public class IjkVideoView extends FrameLayout implements
 
     public void onChangeUIState(int playState) {
         Activity activity = (Activity) getContext();
+        if (activity == null || activity.isFinishing()) {
+            return;
+        }
         int screenType = activity.getRequestedOrientation();
         mPresenter.handleChangeUIState(screenType,playState, hasWindowFocus());
     }
@@ -522,7 +520,8 @@ public class IjkVideoView extends FrameLayout implements
         if (event == null) {
             return;
         }
-        mPresenter.handleNetChangeLogic(event.getNetType());
+        boolean needWifiTip = isNeedWifiTip();
+        mPresenter.handleNetChangeLogic(event.getNetType(), needWifiTip);
     }
 
 
@@ -606,16 +605,17 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mBackButton);
 
         Utils.hideViewIfNeed(mTopStatusView);
+
         //底部布局隐藏
-        mBottomContainer.setVisibility(View.INVISIBLE);
+        Utils.hideViewIfNeed(mBottomContainer);
         //loading 布局隐藏
-        mLoadingView.setVisibility(View.INVISIBLE);
+        Utils.hideViewIfNeed(mLoadingView);
         //锁屏按钮隐藏
         Utils.hideViewIfNeed(mLockBtn);
         //重播按钮隐藏
-        mReplayView.setVisibility(GONE);
+        Utils.hideViewIfNeed(mReplayView);
         //progressbar 隐藏
-        mBottomProgressBar.setVisibility(View.INVISIBLE);
+        Utils.hideViewIfNeed(mBottomProgressBar);
         //开始按钮显示
         Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_start);
@@ -634,7 +634,7 @@ public class IjkVideoView extends FrameLayout implements
         Utils.showViewIfNeed(mBottomContainer);
         //底部progressbar 隐藏
         Utils.hideViewIfNeed(mBottomProgressBar);
-        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
+        cancleDismissControlViewTimer();
     }
 
     @Override
@@ -697,11 +697,15 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUIFullScreen() {
+        Activity activity = Utils.getActivity(getContext());
+        if (activity == null || activity.isFinishing()) {
+            return;
+        }
         mToggleFullScreen = true;
         PlayerManager.getInstance().setScreenState(mCurrentScreenState = ScreenState.SCREEN_STATE_FULLSCREEN);
 
 
-        ViewGroup windowContent = (ViewGroup) (Utils.getActivity(getContext())).findViewById(Window.ID_ANDROID_CONTENT);
+        ViewGroup windowContent = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
         mVideoWidth = this.getWidth();
         mVideoHeight = this.getHeight();
         mOldParent = (ViewGroup)this.getParent();
@@ -712,8 +716,8 @@ public class IjkVideoView extends FrameLayout implements
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         windowContent.addView(this, lp);
 
-        Utils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
-        Utils.getActivity(getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         mFullscreenButton.setImageResource(R.drawable.news_video_full_off);
 
@@ -731,18 +735,25 @@ public class IjkVideoView extends FrameLayout implements
             return;
         }
         mToggleFullScreen = true;
+        Activity activity = Utils.getActivity(getContext());
+        if (activity == null || activity.isFinishing()) {
+            return;
+        }
+
         PlayerManager.getInstance().setScreenState(mCurrentScreenState = ScreenState.SCREEN_STATE_NORMAL);
 
-        ViewGroup windowContent = (ViewGroup) (Utils.getActivity(getContext())).findViewById(Window.ID_ANDROID_CONTENT);
+        ViewGroup windowContent = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
         windowContent.removeView(this);
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(mVideoWidth, mVideoHeight);
-        mOldParent.addView(this, mOldIndex, lp);
-
-        Utils.getActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
-        Utils.getActivity(getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        mFullscreenButton.setImageResource(R.drawable.news_video_full_on);
+        if (mOldParent != null) {
+            mOldParent.addView(this, mOldIndex, lp);
+        }
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//设置全屏
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if (mFullscreenButton != null) {
+            mFullscreenButton.setImageResource(R.drawable.news_video_full_on);
+        }
         mOldParent = null;
         mOldIndex = 0;
 
@@ -756,7 +767,6 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void changeUILock() {
-        mLockBtn.setImageResource(R.drawable.news_video_lock_on);
         Utils.hideViewIfNeed(mTitleTextView);
         Utils.hideViewIfNeed(mBackButton);
         Utils.hideViewIfNeed(mWifiView);
@@ -766,15 +776,20 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mStartButton);
         Utils.hideViewIfNeed(mBottomContainer);
         Utils.showViewIfNeed(mLockBtn);
+        if (mLockBtn != null) {
+            mLockBtn.setImageResource(R.drawable.news_video_lock_on);
+        }
     }
 
     @Override
     public void changeUIUnLock() {
-        mLockBtn.setImageResource(R.drawable.news_video_lock_off);
         Utils.showViewIfNeed(mTitleTextView);
         Utils.showViewIfNeed(mStartButton);
         Utils.showViewIfNeed(mBottomContainer);
         Utils.showViewIfNeed(mBackButton);
+        if (mLockBtn != null) {
+            mLockBtn.setImageResource(R.drawable.news_video_lock_off);
+        }
     }
 
     @Override
@@ -848,6 +863,14 @@ public class IjkVideoView extends FrameLayout implements
         }
     }
 
+    @Override
+    public void setNeedWifiTip(boolean needWifiTip) {
+        SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+        if (preference != null) {
+            preference.edit().putBoolean("MOBILE_DATA_ENABLE", needWifiTip).apply();
+        }
+    }
+
     /************************ 全屏弹窗显示快进，快退，音量，屏幕亮度 ********************************/
 
     @Override
@@ -866,9 +889,15 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mLoadingView);
         Utils.hideViewIfNeed(mPopPregressBar);
 
-        mPopCurTimeView.setText(seekTime);
-        mPopTotalTimeView.setText(" / " + totalTime);
-        mPopIconView.setImageResource(R.drawable.news_video_gesture_backward);
+        if (mPopCurTimeView != null) {
+            mPopCurTimeView.setText(seekTime);
+        }
+        if (mPopTotalTimeView != null) {
+            mPopTotalTimeView.setText(" / " + totalTime);
+        }
+        if (mPopIconView != null) {
+            mPopIconView.setImageResource(R.drawable.news_video_gesture_backward);
+        }
     }
 
     @Override
@@ -902,18 +931,27 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mStartButton);
         Utils.hideViewIfNeed(mPopTimeCtrlView);
         Utils.hideViewIfNeed(mLoadingView);
-        mPopIconView.setImageResource(R.drawable.news_video_gesture_volume);
+        if (mPopIconView != null) {
+            mPopIconView.setImageResource(R.drawable.news_video_gesture_volume);
+        }
     }
 
 
     @Override
     public void changeMediaVolume(float deltaY) {
-        AudioManager mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-        int mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager
+        Context context =  getContext();
+        if (context == null) {
+            return;
+        }
+        AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (audio == null) {
+            return;
+        }
+        int mGestureDownVolume = audio.getStreamVolume(AudioManager
                 .STREAM_MUSIC);
-        int mAudioMaxValue = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int mAudioMaxValue = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         int deltaV = (int) (mAudioMaxValue * deltaY * 3 / (double)mScreenHight);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume +
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, mGestureDownVolume +
                 deltaV, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         int volumePercent = (int) (mGestureDownVolume * 100 / (double) (mAudioMaxValue + deltaY * 3 *
                 100 / mScreenHight));
@@ -950,10 +988,16 @@ public class IjkVideoView extends FrameLayout implements
         Utils.hideViewIfNeed(mStartButton);
         Utils.hideViewIfNeed(mLoadingView);
         Utils.hideViewIfNeed(mPopTimeCtrlView);
-        mPopIconView.setImageResource(R.drawable.news_video_gesture_brightness);
+        if (mPopIconView != null) {
+            mPopIconView.setImageResource(R.drawable.news_video_gesture_brightness);
+        }
+
         Activity activity = (Activity) getContext();
-        float percent = activity.getWindow().getAttributes().screenBrightness * 100;
-        mPopPregressBar.setProgress((int) percent);
+        if (activity != null) {
+            float percent = activity.getWindow().getAttributes().screenBrightness * 100;
+            mPopPregressBar.setProgress((int) percent);
+        }
+
     }
 
     @Override
@@ -969,6 +1013,9 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void showMobileDataDialog() {
+        if (getContext() == null) {
+            return;
+        }
         netDialog = new CustomDialog(getContext());
         netDialog.nightMode(false);
         netDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -1096,11 +1143,13 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void startDismissNormalViewTime() {
-        mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
-        android.os.Message msg = new android.os.Message();
-        msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
-        msg.arg1 = ScreenState.SCREEN_STATE_NORMAL;
-        mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+        if (mHandler != null) {
+            mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
+            android.os.Message msg = new android.os.Message();
+            msg.what = ProgressHandler.UPDATE_CONTROLLER_VIEW;
+            msg.arg1 = ScreenState.SCREEN_STATE_NORMAL;
+            mHandler.sendMessageDelayed(msg, ProgressHandler.AUDO_HIDE_WIDGET_TIME);
+        }
     }
 
     /************************ 播放器交互 ********************************/
@@ -1111,7 +1160,7 @@ public class IjkVideoView extends FrameLayout implements
      */
     public void startPlayVideo() {
 
-        if(!Utils.isConnected(getContext())) {
+        if(!NetworkUtils.isNetworkAvailable()) {
             if(!PlayerManager.getInstance().isCached(mVideoUrl)) {
                 Toast.makeText(getContext(), R.string.net_error_text, Toast.LENGTH_SHORT).show();
                 return;
@@ -1136,4 +1185,18 @@ public class IjkVideoView extends FrameLayout implements
         AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
     }
+
+    /**
+     * 判断是否需要流量提示框
+     * @return
+     */
+    public boolean isNeedWifiTip() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+        if (preferences == null) {
+            return true;
+        }
+        boolean needWifiTip = preferences.getBoolean("MOBILE_DATA_ENABLE", false);
+        return needWifiTip;
+    }
+
 }
