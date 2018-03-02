@@ -10,7 +10,6 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/compats/commonutil.iml" filepath="$PROJECT_DIR$/compats/commonutil.iml" />
       <module fileurl="file://$PROJECT_DIR$/compats/compats.iml" filepath="$PROJECT_DIR$/compats/compats.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ijkplayer/IjkPlayer.iml" filepath="$PROJECT_DIR$/ijkplayer/IjkPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/quickvideo/QuickVideo.iml" filepath="$PROJECT_DIR$/quickvideo/QuickVideo.iml" />
     </modules>
   </component>

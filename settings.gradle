@@ -1,1 +1,1 @@
-include ':app', ':quickvideo', ':compats', 'ijkplayer'
+include ':app', ':quickvideo', ':compats'
