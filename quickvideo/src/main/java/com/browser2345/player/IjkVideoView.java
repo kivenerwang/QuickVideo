@@ -1113,7 +1113,7 @@ public class IjkVideoView extends FrameLayout implements
 
         if(!Utils.isConnected(getContext())) {
             if(!PlayerManager.getInstance().isCached(mVideoUrl)) {
-                Toast.makeText(getContext(), R.string.vp_no_network, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.net_error_text, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
