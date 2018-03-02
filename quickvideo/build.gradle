@@ -30,7 +30,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.danikula:videocache:2.7.0'
     compile project(':compats')
-    compile project(':IjkPlayer')
+    compile project(':ijkplayer')
 
     //butterknife
     compile 'com.jakewharton:butterknife:8.4.0'
