@@ -9,9 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/IjkPlayer" />
-            <option value="$PROJECT_DIR$/QuickVideo" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/compats" />
+            <option value="$PROJECT_DIR$/quickvideo" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
