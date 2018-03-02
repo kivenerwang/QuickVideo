@@ -626,14 +626,14 @@ public class IjkVideoView extends FrameLayout implements
         //顶部title显示
         Utils.showViewIfNeed(mTitleTextView);
         //loading 布局隐藏
-        mLoadingView.setVisibility(View.INVISIBLE);
+        Utils.hideViewIfNeed(mLoadingView);
         //开始按钮显示
         Utils.showViewIfNeed(mStartButton);
         mStartButton.setImageResource(R.drawable.news_video_start);
         //底部控制布局显示
-        mBottomContainer.setVisibility(View.VISIBLE);
+        Utils.showViewIfNeed(mBottomContainer);
         //底部progressbar 隐藏
-        mBottomProgressBar.setVisibility(View.INVISIBLE);
+        Utils.hideViewIfNeed(mBottomProgressBar);
         mHandler.removeMessages(ProgressHandler.UPDATE_CONTROLLER_VIEW);
     }
 
@@ -799,7 +799,9 @@ public class IjkVideoView extends FrameLayout implements
 
     @Override
     public void startUpdateBottomPlayInfo() {
-        mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
+        if (mHandler != null) {
+            mHandler.sendEmptyMessage(ProgressHandler.UPDATE_BOTTOM_PROGRESS);
+        }
     }
 
     @Override
@@ -807,11 +809,6 @@ public class IjkVideoView extends FrameLayout implements
         if (mScreenShotsBitmap != null && !mScreenShotsBitmap.isRecycled()) {
             mScreenShotView.setImageBitmap(mScreenShotsBitmap);
             Utils.showViewIfNeed(mScreenShotView);
-            mStartButton.setImageResource(R.drawable.news_video_start);
-            Utils.showViewIfNeed(mStartButton);
-            Utils.showViewIfNeed(mTitleTextView);
-            Utils.hideViewIfNeed(mBottomContainer);
-            Utils.hideViewIfNeed(mBackButton);
         } else {
             Log.i("dongdong", "error are showScreenShots"+ Log.getStackTraceString(new Throwable()));
         }
@@ -1028,7 +1025,7 @@ public class IjkVideoView extends FrameLayout implements
         String bufferText = bufferCount + "%";
         mBufferTextView.setText(bufferText);
         mBufferTextView.setVisibility(VISIBLE);
-        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_LOADING_SPEED, 500);
+        mHandler.sendEmptyMessageDelayed(ProgressHandler.UPDATE_LOADING_SPEED, ProgressHandler.TIME_UPDATE_LOADING_SPEED);
     }
 
 

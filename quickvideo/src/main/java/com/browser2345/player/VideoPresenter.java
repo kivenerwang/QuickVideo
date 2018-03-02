@@ -104,7 +104,6 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
             case PlayState.STATE_PAUSE:
                 //当前暂停状态，需要显示startbtn
                 handleViewState(false, screenState);
-                PlayerManager.getInstance().play();
                 break;
             default:
                 break;
@@ -251,36 +250,10 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
         if (playState != PlayState.STATE_NORMAL && !hasFocus) {
             mVideoView.makeScreenShotsInfo();
             mVideoView.showScreenShots();
+            //失去焦點，需要顯示視頻暫停的UI
+            mVideoView.changeUIPause();
         } else {
-            switch (playState) {
-                case PlayState.STATE_NORMAL:
-                    mVideoView.changeUINormal();
-                    break;
-                case PlayState.STATE_LOADING:
-                    mVideoView.changeUILoading();
-                    break;
-                case PlayState.STATE_PLAYING:
-                    mVideoView.changeUIPlay();
-                    mVideoView.releaseScreenShots();
-                    break;
-                case PlayState.STATE_PAUSE:
-                    mVideoView.changeUIPause();
-                    break;
-                case PlayState.STATE_PLAYING_BUFFERING_START:
-                    mVideoView.changeUIBufferStart();
-                    break;
-                case PlayState.STATE_AUTO_COMPLETE:
-                    mVideoView.changeUICompeted();
-                    break;
-                case PlayState.STATE_ERROR:
-                    mVideoView.changeUIError();
-                    break;
-                case PlayState.STATE_NET_ERROR:
-                    mVideoView.changeUINetError();
-                    break;
-                default:
-                    throw new IllegalStateException("Illegal Play State:" + playState);
-            }
+            updateVideoUIState(playState);
         }
         //继续处理全屏状态
         if (ScreenState.isFullScreen(screenType)) {
@@ -289,10 +262,47 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
 
     }
 
+    /**
+     * 更新視頻UI
+     * @param playState
+     */
+    private void updateVideoUIState(int playState) {
+        switch (playState) {
+            case PlayState.STATE_NORMAL:
+                mVideoView.changeUINormal();
+                break;
+            case PlayState.STATE_LOADING:
+                mVideoView.changeUILoading();
+                break;
+            case PlayState.STATE_PLAYING:
+                mVideoView.changeUIPlay();
+                mVideoView.releaseScreenShots();
+                break;
+            case PlayState.STATE_PAUSE:
+                mVideoView.changeUIPause();
+                break;
+            case PlayState.STATE_PLAYING_BUFFERING_START:
+                mVideoView.changeUIBufferStart();
+                break;
+            case PlayState.STATE_AUTO_COMPLETE:
+                mVideoView.changeUICompeted();
+                break;
+            case PlayState.STATE_ERROR:
+                mVideoView.changeUIError();
+                break;
+            case PlayState.STATE_NET_ERROR:
+                mVideoView.changeUINetError();
+                break;
+            default:
+                throw new IllegalStateException("Illegal Play State:" + playState);
+        }
+    }
+
     @Override
     public void handleViewChange(int playState) {
         if (playState == PlayState.STATE_PAUSE) {
             mVideoView.showScreenShots();
+
         }
     }
 
@@ -472,7 +482,7 @@ public class VideoPresenter implements IjkVideoContract.IVideoPresenter{
                 mVideoView.hideViewInFullScreenState();
             } else {
                 mVideoView.showViewInFullScreenState();
-                mVideoView.startDismissNormalViewTime();
+                mVideoView.startDismissFullScreenViewTimer();
             }
 
         } else {
