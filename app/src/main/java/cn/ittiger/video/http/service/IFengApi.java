@@ -1,9 +1,8 @@
 package cn.ittiger.video.http.service;
 
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
-import rx.Observable;
-
 /**
  * @author laohu
  * @site http://ittiger.cn

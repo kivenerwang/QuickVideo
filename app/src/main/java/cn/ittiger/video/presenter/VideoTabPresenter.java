@@ -4,12 +4,12 @@ import cn.ittiger.video.bean.VideoTabData;
 import cn.ittiger.video.factory.ResultParseFactory;
 import cn.ittiger.video.mvpview.VideoTabMvpView;
 import cn.ittiger.video.util.DBManager;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.observers.Observers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
@@ -25,17 +25,17 @@ public abstract class VideoTabPresenter extends MvpBasePresenter<VideoTabMvpView
 
         Observable.just(getType().value())
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<Integer, Boolean>() {
+                .map(new Function<Integer, Boolean>() {
                     @Override
-                    public Boolean call(Integer integer) {
+                        public Boolean apply(Integer integer) {
 
                         String[] whereArgs = {String.valueOf(integer.intValue())};
                         return DBManager.getInstance().getSQLiteDB().queryIfExist(VideoTabData.class, "type=?", whereArgs);
                     }
                 })
-                .flatMap(new Func1<Boolean, Observable<List<VideoTabData>>>() {
+                .flatMap(new Function<Boolean, Observable<List<VideoTabData>>>() {
                     @Override
-                    public Observable<List<VideoTabData>> call(Boolean aBoolean) {
+                    public Observable<List<VideoTabData>> apply(Boolean aBoolean) {
 
                         if(aBoolean.booleanValue()) {
                             String[] whereArgs = {String.valueOf(getType().value())};
@@ -43,9 +43,9 @@ public abstract class VideoTabPresenter extends MvpBasePresenter<VideoTabMvpView
                             return Observable.just(tabs);
                         }
                         return getHttpCallObservable()
-                                .flatMap(new Func1<String, Observable<List<VideoTabData>>>() {
+                                .flatMap(new Function<String, Observable<List<VideoTabData>>>() {
                                     @Override
-                                    public Observable<List<VideoTabData>> call(String s) {
+                                    public Observable<List<VideoTabData>> apply(String s) {
                                         List<VideoTabData> tabs = ResultParseFactory.parseTab(s, getType());
                                         if(tabs == null || tabs.size() == 0) {
                                             return Observable.error(new NullPointerException("not load video tab data"));
@@ -58,17 +58,22 @@ public abstract class VideoTabPresenter extends MvpBasePresenter<VideoTabMvpView
                 })
 
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<VideoTabData>>() {
-                    @Override
-                    public void onCompleted() {
-
-                        getView().showContent();
-                    }
+                .subscribe(new Observer<List<VideoTabData>>() {
 
                     @Override
                     public void onError(Throwable e) {
 
                         getView().showError(e, pullToRefresh);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        getView().showContent();
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
                     }
 
                     @Override

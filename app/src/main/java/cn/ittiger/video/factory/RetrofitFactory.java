@@ -6,7 +6,7 @@ import cn.ittiger.video.http.service.TtKbApi;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.util.concurrent.TimeUnit;
@@ -51,7 +51,7 @@ public class RetrofitFactory {
                 .baseUrl(NETEASY_BASE_URL)
                 .client(client)
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         return retrofit.create(NetEasyApi.class);
     }
@@ -82,7 +82,7 @@ public class RetrofitFactory {
                 .baseUrl(TTKB_BASE_URL)
                 .client(client)
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         return retrofit.create(TtKbApi.class);
     }
@@ -113,7 +113,7 @@ public class RetrofitFactory {
                 .baseUrl(IFENG_BASE_URL)
                 .client(client)
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         return retrofit.create(IFengApi.class);
     }

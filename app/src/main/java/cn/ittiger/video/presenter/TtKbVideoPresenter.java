@@ -4,7 +4,7 @@ import cn.ittiger.video.bean.TtKb;
 import cn.ittiger.video.factory.RetrofitFactory;
 import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.util.DBManager;
-import rx.Observable;
+import io.reactivex.Observable;
 
 import java.util.HashMap;
 import java.util.Map;

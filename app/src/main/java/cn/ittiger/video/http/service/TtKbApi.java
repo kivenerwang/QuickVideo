@@ -1,10 +1,10 @@
 package cn.ittiger.video.http.service;
 
+import io.reactivex.Observable;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import rx.Observable;
 
 import java.util.Map;
 

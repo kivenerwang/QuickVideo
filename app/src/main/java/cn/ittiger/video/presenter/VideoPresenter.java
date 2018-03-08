@@ -5,11 +5,12 @@ import android.util.Log;
 import cn.ittiger.video.bean.VideoData;
 import cn.ittiger.video.factory.ResultParseFactory;
 import cn.ittiger.video.mvpview.VideoMvpView;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 
@@ -48,17 +49,16 @@ public abstract class VideoPresenter extends MvpBasePresenter<VideoMvpView>
 
         getHttpCallObservable(mCurPage)
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<String, List<VideoData>>() {
+                .map(new Function<String, List<VideoData>>() {
 
                     @Override
-                    public List<VideoData> call(String s) {
-                        Log.i("dongdong", "request - s = " + s);
+                    public List<VideoData> apply(String s) {
                         return ResultParseFactory.parse(s, getType());
                     }
                 })
-                .flatMap(new Func1<List<VideoData>, Observable<List<VideoData>>>() {
+                .flatMap(new Function<List<VideoData>, Observable<List<VideoData>>>() {
                     @Override
-                    public Observable<List<VideoData>> call(List<VideoData> videos) {
+                    public Observable<List<VideoData>> apply(List<VideoData> videos) {
 
                         if(videos == null || videos.size() == 0) {
                             return Observable.error(new NullPointerException("not load video data"));
@@ -70,13 +70,7 @@ public abstract class VideoPresenter extends MvpBasePresenter<VideoMvpView>
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<VideoData>>() {
-                    @Override
-                    public void onCompleted() {
-
-                        getView().showContent();
-                        mCurPage ++;
-                    }
+                .subscribe(new Observer<List<VideoData>>() {
 
                     @Override
                     public void onError(Throwable e) {
@@ -86,6 +80,17 @@ public abstract class VideoPresenter extends MvpBasePresenter<VideoMvpView>
                         } else {
                             getView().showLoadMoreErrorView();
                         }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        getView().showContent();
+                        mCurPage ++;
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
                     }
 
                     @Override

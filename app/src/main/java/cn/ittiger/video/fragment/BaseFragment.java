@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 
 import cn.ittiger.video.R;
 import cn.ittiger.video.ui.LoadingView;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 
 import java.util.concurrent.TimeUnit;
 
@@ -74,9 +74,9 @@ public abstract class BaseFragment<CV extends View, M, V extends MvpLceView<M>, 
         } else {
             Observable.timer(50, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<Long>() {
+                    .subscribe(new Consumer<Long>() {
                         @Override
-                        public void call(Long aLong) {
+                        public void accept(Long aLong) {
                             refreshData(pullToRefresh);
                         }
                     });

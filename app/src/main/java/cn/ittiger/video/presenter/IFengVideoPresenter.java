@@ -5,7 +5,7 @@ import cn.ittiger.video.factory.RetrofitFactory;
 import cn.ittiger.video.http.DataType;
 import cn.ittiger.video.util.DBManager;
 import cn.ittiger.video.util.DataKeeper;
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * @author laohu

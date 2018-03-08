@@ -2,7 +2,8 @@ package cn.ittiger.video.presenter;
 
 import cn.ittiger.video.factory.RetrofitFactory;
 import cn.ittiger.video.http.DataType;
-import rx.Observable;
+import io.reactivex.Observable;
+
 
 /**
  * @author: laohu on 2016/10/8
